@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Book Swap</string>
+    <string name="edit_message">Enter a message</string>
+    <string name="button_send">Send</string>
+    <string name="discover">Discover</string>
+    <string name="likes">Likes</string>
+    <string name="chats">Chats</string>
+    <string name="profile">Profile</string>
 </resources>
