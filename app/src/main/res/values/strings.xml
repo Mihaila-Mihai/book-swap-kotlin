@@ -11,4 +11,13 @@
     <string name="yes">Yes</string>
     <string name="negative">No</string>
     <string name="dialog_exit">Are you sure you want to exit the app?</string>
+    <string name="username">Username</string>
+    <string name="email">Email address</string>
+    <string name="password">Password</string>
+    <string name="register">Register</string>
+    <string name="create_an_account">Create an account</string>
+    <string name="no_account">Don\'t have an account?</string>
+    <string name="welcome_text">Welcome to Book Swap</string>
+    <string name="login">Sign in</string>
+    <string name="register_text"><u>Register</u></string>
 </resources>
