@@ -1,22 +1,26 @@
 package ro.example.bookswap
 
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.navigation.NavigationBarView
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import ro.example.bookswap.fragments.*
-
-const val EXTRA_MESSAGE = "ro.example.bookswap.MESSAGE"
 
 class MainActivity : AppCompatActivity(), ExitDialogFragment.NoticeDialogListener {
 
     private lateinit var navigationBarView: NavigationBarView
+    private lateinit var googleSignInClient: GoogleSignInClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +33,24 @@ class MainActivity : AppCompatActivity(), ExitDialogFragment.NoticeDialogListene
         setContentView(R.layout.activity_main)
 
         val toast: Toast = Toast.makeText(applicationContext, "text", Toast.LENGTH_SHORT)
+
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
+
+        findViewById<Button>(R.id.button).setOnClickListener {
+            googleSignInClient.signOut()
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        Firebase.auth.signOut()
+                        val intent = Intent(this, LoginActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    }
+                }
+        }
 
         navigationBarView = findViewById(R.id.bottom_nav)
 
@@ -99,7 +121,7 @@ class MainActivity : AppCompatActivity(), ExitDialogFragment.NoticeDialogListene
         }
     }
 
-    fun showDialog() {
+    private fun showDialog() {
         val dialog = ExitDialogFragment()
         dialog.show(supportFragmentManager, "ExitDialogFragment")
     }
