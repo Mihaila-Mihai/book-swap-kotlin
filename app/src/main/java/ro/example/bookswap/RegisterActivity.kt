@@ -13,6 +13,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.ktx.Firebase
+import ro.example.bookswap.enums.Activities
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -40,6 +41,12 @@ class RegisterActivity : AppCompatActivity() {
                     Log.d(TAG, "createUserWithEmail: success")
                     user = Firebase.auth.currentUser!!
                     updateUsername()
+                    val isNew: Boolean = task.result?.additionalUserInfo?.isNewUser ?: true
+                    if (isNew) {
+                        startActivityCustom(Activities.TUTORIAL)
+                    } else {
+                        startActivityCustom(Activities.MAIN)
+                    }
                 } else {
                     // Sign in fails
                     Log.w(TAG, "createUserWithEmail:failure", task.exception)
@@ -60,7 +67,6 @@ class RegisterActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     Log.d(TAG, "User profile updated to ${user.displayName}.")
                     sendVerificationEmail()
-                    startMainActivity()
                 }
             }
     }
@@ -74,10 +80,17 @@ class RegisterActivity : AppCompatActivity() {
             }
     }
 
-    private fun startMainActivity() {
-        val intent = Intent(this, MainActivity::class.java)
+
+    private fun startActivityCustom(activity: Activities) {
+        val intent = when (activity) {
+            Activities.MAIN -> Intent(this, MainActivity::class.java)
+            Activities.TUTORIAL -> Intent(this, TutorialActivity::class.java)
+            else -> null
+        }
         startActivity(intent)
-        finish()
+        if (activity == Activities.MAIN) {
+            finish()
+        }
     }
 
 }

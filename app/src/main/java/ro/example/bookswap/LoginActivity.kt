@@ -17,6 +17,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
@@ -106,7 +108,12 @@ class LoginActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     // Sign in success
                     Log.d(TAG, "signInWithCredential:success")
-                    startActivityCustom(Activities.MAIN)
+                    val isNew = task.result?.additionalUserInfo?.isNewUser
+                    if (isNew == true) {
+                        startActivityCustom(Activities.TUTORIAL)
+                    } else {
+                        startActivityCustom(Activities.MAIN)
+                    }
                 } else {
                     // If sign in fails, display a message to the user
                     Log.w(TAG, "signInWithCredential:failure", task.exception)
@@ -130,6 +137,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
 
+
     override fun onStart() {
         super.onStart()
 
@@ -140,10 +148,13 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+
+
     private fun startActivityCustom(activity: Activities) {
         val intent = when (activity) {
             Activities.MAIN -> Intent(this, MainActivity::class.java)
             Activities.REGISTER -> Intent(this, RegisterActivity::class.java)
+            Activities.TUTORIAL -> Intent(this, TutorialActivity::class.java)
         }
         startActivity(intent)
         if (activity == Activities.MAIN) {
