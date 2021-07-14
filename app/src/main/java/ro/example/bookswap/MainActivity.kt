@@ -2,6 +2,9 @@ package ro.example.bookswap
 
 import android.content.Intent
 import android.os.Bundle
+import android.transition.Explode
+import android.transition.Fade
+import android.view.Window
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -30,6 +33,13 @@ class MainActivity : AppCompatActivity(), ExitDialogFragment.NoticeDialogListene
                 add<DiscoverFragment>(R.id.fragment_container)
             }
         }
+
+        with(window) {
+            requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
+            exitTransition = Explode()
+            enterTransition = Explode()
+        }
+
         setContentView(R.layout.activity_main)
 
         val toast: Toast = Toast.makeText(applicationContext, "text", Toast.LENGTH_SHORT)
