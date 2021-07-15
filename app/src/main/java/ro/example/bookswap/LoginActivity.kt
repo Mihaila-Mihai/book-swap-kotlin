@@ -9,27 +9,28 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthResult
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import ro.example.bookswap.enums.Activities
+import ro.example.bookswap.models.User
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
     private val RC_SIGN_IN: Int = 120
+    private lateinit var database: DatabaseReference
 
 //    private val startForResult =
 //        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -55,6 +56,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
 
         auth = Firebase.auth
+        database = Firebase.database.reference
 
         findViewById<TextView>(R.id.register_text).setOnClickListener {
             startActivityCustom(Activities.REGISTER)
@@ -110,6 +112,8 @@ class LoginActivity : AppCompatActivity() {
                     Log.d(TAG, "signInWithCredential:success")
                     val isNew = task.result?.additionalUserInfo?.isNewUser
                     if (isNew == true) {
+                        writeNewUser(Firebase.auth.currentUser?.uid!!)
+                        Log.d("UserID", Firebase.auth.currentUser?.uid.toString())
                         startActivityCustom(Activities.TUTORIAL)
                     } else {
                         startActivityCustom(Activities.MAIN)
@@ -120,6 +124,22 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(baseContext, "Authentication failed", Toast.LENGTH_SHORT).show()
                 }
             }
+    }
+
+    private fun writeNewUser(userId: String) {
+        val currentUser = Firebase.auth.currentUser!!
+        val user = currentUser.displayName?.let { currentUser.email?.let { it1 ->
+            User(it, "",
+                it1, "", "Google")
+        } }
+        database.child("users").child(userId).setValue(user).addOnCompleteListener(
+            OnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Log.d(TAG, "LoginActivityDatabaseWrite:success")
+            } else {
+                Log.e(TAG, "LoginActivityDatabaseWrite:fail", task.exception)
+            }
+            })
     }
 
     private fun signInWithEmail(email: String, password: String) {

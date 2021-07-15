@@ -24,5 +24,7 @@
     <string name="new_password">New password</string>
     <string name="apply">Apply</string>
     <string name="cancel">Cancel</string>
+    <string name="password_length">Password too short</string>
+    <string name="same_password">New password can\'t be same as old password</string>
 
 </resources>
