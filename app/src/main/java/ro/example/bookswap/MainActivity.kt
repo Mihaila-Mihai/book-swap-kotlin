@@ -2,6 +2,9 @@ package ro.example.bookswap
 
 import android.content.Intent
 import android.os.Bundle
+import android.transition.Explode
+import android.transition.Fade
+import android.view.Window
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -20,7 +23,6 @@ import ro.example.bookswap.fragments.*
 class MainActivity : AppCompatActivity(), ExitDialogFragment.NoticeDialogListener {
 
     private lateinit var navigationBarView: NavigationBarView
-    private lateinit var googleSignInClient: GoogleSignInClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,27 +32,17 @@ class MainActivity : AppCompatActivity(), ExitDialogFragment.NoticeDialogListene
                 add<DiscoverFragment>(R.id.fragment_container)
             }
         }
+
+        with(window) {
+            requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
+            exitTransition = Explode()
+            enterTransition = Explode()
+        }
+
         setContentView(R.layout.activity_main)
 
         val toast: Toast = Toast.makeText(applicationContext, "text", Toast.LENGTH_SHORT)
 
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
-        googleSignInClient = GoogleSignIn.getClient(this, gso)
-
-        findViewById<Button>(R.id.button).setOnClickListener {
-            googleSignInClient.signOut()
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        Firebase.auth.signOut()
-                        val intent = Intent(this, LoginActivity::class.java)
-                        startActivity(intent)
-                        finish()
-                    }
-                }
-        }
 
         navigationBarView = findViewById(R.id.bottom_nav)
 

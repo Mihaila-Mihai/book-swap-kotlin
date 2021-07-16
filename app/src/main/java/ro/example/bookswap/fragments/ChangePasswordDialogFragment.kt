@@ -6,12 +6,10 @@ import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.DialogFragment
 import ro.example.bookswap.R
 
-class ExitDialogFragment : DialogFragment() {
-
+class ChangePasswordDialogFragment : DialogFragment() {
     private lateinit var listener: NoticeDialogListener
 
     @SuppressLint("InflateParams")
@@ -19,12 +17,14 @@ class ExitDialogFragment : DialogFragment() {
         return activity?.let {
             val builder = AlertDialog.Builder(it)
             val inflater = requireActivity().layoutInflater
-            builder.setView(inflater.inflate(R.layout.exit_dialog, null))
-                .setPositiveButton(R.string.yes,
+            builder.setView(inflater.inflate(R.layout.change_password_dialog, null))
+                .setPositiveButton(
+                    R.string.apply,
                     DialogInterface.OnClickListener { dialog, id ->
                         listener.onDialogPositiveClick(this)
                     })
-                .setNegativeButton(R.string.negative,
+                .setNegativeButton(
+                    R.string.cancel,
                     DialogInterface.OnClickListener { dialog, id ->
                         listener.onDialogNegativeClick(this)
                     })
