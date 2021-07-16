@@ -130,7 +130,7 @@ class LoginActivity : AppCompatActivity() {
         val currentUser = Firebase.auth.currentUser!!
         val user = currentUser.displayName?.let { currentUser.email?.let { it1 ->
             User(it, "",
-                it1, "", "Google")
+                it1, "", "Google", currentUser.photoUrl.toString())
         } }
         database.child("users").child(userId).setValue(user).addOnCompleteListener(
             OnCompleteListener { task ->

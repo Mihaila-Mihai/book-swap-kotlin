@@ -23,7 +23,6 @@ import ro.example.bookswap.fragments.*
 class MainActivity : AppCompatActivity(), ExitDialogFragment.NoticeDialogListener {
 
     private lateinit var navigationBarView: NavigationBarView
-    private lateinit var googleSignInClient: GoogleSignInClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,23 +43,6 @@ class MainActivity : AppCompatActivity(), ExitDialogFragment.NoticeDialogListene
 
         val toast: Toast = Toast.makeText(applicationContext, "text", Toast.LENGTH_SHORT)
 
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
-        googleSignInClient = GoogleSignIn.getClient(this, gso)
-
-        findViewById<Button>(R.id.button).setOnClickListener {
-            googleSignInClient.signOut()
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        Firebase.auth.signOut()
-                        val intent = Intent(this, LoginActivity::class.java)
-                        startActivity(intent)
-                        finish()
-                    }
-                }
-        }
 
         navigationBarView = findViewById(R.id.bottom_nav)
 

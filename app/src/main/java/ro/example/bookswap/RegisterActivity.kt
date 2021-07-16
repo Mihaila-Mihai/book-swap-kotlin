@@ -95,7 +95,7 @@ class RegisterActivity : AppCompatActivity() {
                     val encryptedPassword =
                         BCrypt.withDefaults().hashToString(12, passwordString.toCharArray())
                     val user =
-                        User(usernameString, encryptedPassword, emailString, "", "EmailAndPassword")
+                        User(usernameString, encryptedPassword, emailString, "", "EmailAndPassword", "default")
                     writeNewUser(user)
                 }
             }

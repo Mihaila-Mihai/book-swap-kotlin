@@ -26,5 +26,9 @@
     <string name="cancel">Cancel</string>
     <string name="password_length">Password too short</string>
     <string name="same_password">New password can\'t be same as old password</string>
+    <string name="about_you">About you</string>
+    <string name="email_address">Email address</string>
+    <string name="change_password">Change password</string>
+    <string name="sign_out">Sign out</string>
 
 </resources>
