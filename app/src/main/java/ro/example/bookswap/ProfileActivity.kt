@@ -8,10 +8,7 @@ import android.os.CountDownTimer
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatImageButton
@@ -21,6 +18,7 @@ import com.bumptech.glide.Glide
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
@@ -45,7 +43,7 @@ class ProfileActivity : AppCompatActivity(), ChangePasswordDialogFragment.Notice
     private lateinit var emailAddress: EditText
     private lateinit var userDescription: EditText
     private lateinit var googleSignInClient: GoogleSignInClient
-
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
@@ -76,7 +74,13 @@ class ProfileActivity : AppCompatActivity(), ChangePasswordDialogFragment.Notice
         findViewById<AppCompatImageButton>(R.id.about_you_apply).setOnClickListener { changeUserDescription() }
         findViewById<AppCompatImageButton>(R.id.email_address_button).setOnClickListener { changeEmailAddress() }
         findViewById<Button>(R.id.sign_out_button).setOnClickListener { signOut() }
+        findViewById<CircleImageView>(R.id.profile_image).setOnClickListener { changeProfileImage() }
+
+
+
+
     }
+
 
     private fun signOut() {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -308,4 +312,19 @@ class ProfileActivity : AppCompatActivity(), ChangePasswordDialogFragment.Notice
     override fun onDialogNegativeClick(dialog: DialogFragment) {
         dialog.dismiss()
     }
+
+    private fun changeProfileImage() {
+        val dialog = MaterialAlertDialogBuilder(this)
+        dialog.setView(R.layout.image_change_method_dialog)
+        val dialogCreated = dialog.create()
+        dialogCreated.show()
+        dialogCreated.findViewById<ImageButton>(R.id.camera_button)?.setOnClickListener {
+            dialogCreated.dismiss()
+            val intent = Intent(this, CameraActivity::class.java)
+            startActivity(intent)
+        }
+
+    }
+
+
 }

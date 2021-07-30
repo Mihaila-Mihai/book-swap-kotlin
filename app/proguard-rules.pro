@@ -29,3 +29,5 @@
     -keepclassmembers class ro.example.bookswap.models.** {
       *;
     }
+
+    -keep class androidx.appcompat.widget.** { *; }
