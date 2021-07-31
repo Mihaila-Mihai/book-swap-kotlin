@@ -52,6 +52,11 @@ class ProfileActivity : AppCompatActivity(), ChangePasswordDialogFragment.Notice
     private lateinit var googleSignInClient: GoogleSignInClient
     private val storage = Firebase.storage
 
+    override fun onResume() {
+        super.onResume()
+        setProfilePicture()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)

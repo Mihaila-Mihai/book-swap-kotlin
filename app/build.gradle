@@ -46,6 +46,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-database-ktx'
     implementation 'com.google.firebase:firebase-storage-ktx'
 
+    // Image slider
+    implementation 'com.github.denzcoskun:ImageSlideshow:0.1.0'
+
     // Google Sign in dependency
     implementation 'com.google.android.gms:play-services-auth:19.0.0'
 

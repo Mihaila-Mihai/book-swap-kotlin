@@ -16,8 +16,8 @@
         android:layout_marginBottom="50dp"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/switch_button" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/switch_button"
@@ -25,9 +25,20 @@
         android:layout_height="wrap_content"
         android:src="@drawable/ic_switch_camera"
         app:layout_constraintBottom_toBottomOf="@+id/camera_capture_button"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/finnish_button"
         app:layout_constraintStart_toEndOf="@+id/camera_capture_button"
         app:layout_constraintTop_toTopOf="@+id/camera_capture_button" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/finnish_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_check"
+        app:layout_constraintStart_toEndOf="@id/switch_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/camera_capture_button"
+        app:layout_constraintBottom_toBottomOf="@id/camera_capture_button"/>
+
 
     <androidx.camera.view.PreviewView
         android:id="@+id/viewFinder"
