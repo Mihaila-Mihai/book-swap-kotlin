@@ -16,6 +16,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import de.hdodenhof.circleimageview.CircleImageView
+import ro.example.bookswap.AddBookActivity
 import ro.example.bookswap.ProfileActivity
 import ro.example.bookswap.R
 
@@ -55,7 +56,9 @@ class ProfileFragment : Fragment() {
 
         })
         view.findViewById<AppCompatImageButton>(R.id.add_book_button).setOnClickListener {
-//            val intent = Intent(context, )
+            val intent = Intent(context, AddBookActivity::class.java)
+
+            startActivity(intent)
         }
 
 
