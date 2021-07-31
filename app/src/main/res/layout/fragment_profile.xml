@@ -81,7 +81,7 @@
 
 
         <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/appCompatImageButton"
+            android:id="@+id/add_book_button"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:background="@drawable/round_btn"
@@ -102,7 +102,7 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/textView5"
             app:layout_constraintStart_toEndOf="@+id/textView4"
-            app:layout_constraintTop_toBottomOf="@+id/appCompatImageButton" />
+            app:layout_constraintTop_toBottomOf="@+id/add_book_button" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/book_list"

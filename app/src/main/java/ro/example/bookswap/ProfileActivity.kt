@@ -3,6 +3,9 @@ package ro.example.bookswap
 import android.app.Activity
 import android.content.ContentValues.TAG
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
@@ -29,9 +32,13 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.ktx.storage
 import de.hdodenhof.circleimageview.CircleImageView
+import kotlinx.android.synthetic.main.activity_profile.*
 import ro.example.bookswap.fragments.ChangePasswordDialogFragment
 import ro.example.bookswap.models.User
+import java.io.ByteArrayOutputStream
 
 
 class ProfileActivity : AppCompatActivity(), ChangePasswordDialogFragment.NoticeDialogListener {
@@ -43,7 +50,8 @@ class ProfileActivity : AppCompatActivity(), ChangePasswordDialogFragment.Notice
     private lateinit var emailAddress: EditText
     private lateinit var userDescription: EditText
     private lateinit var googleSignInClient: GoogleSignInClient
-    
+    private val storage = Firebase.storage
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
@@ -75,7 +83,6 @@ class ProfileActivity : AppCompatActivity(), ChangePasswordDialogFragment.Notice
         findViewById<AppCompatImageButton>(R.id.email_address_button).setOnClickListener { changeEmailAddress() }
         findViewById<Button>(R.id.sign_out_button).setOnClickListener { signOut() }
         findViewById<CircleImageView>(R.id.profile_image).setOnClickListener { changeProfileImage() }
-
 
 
 
@@ -113,11 +120,13 @@ class ProfileActivity : AppCompatActivity(), ChangePasswordDialogFragment.Notice
                         database.child("users").child(user.uid).child("email").setValue(email)
                             .addOnSuccessListener {
                                 Log.d(TAG, "User email address updated")
-                                Toast.makeText(this, "Email address updated", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this, "Email address updated", Toast.LENGTH_SHORT)
+                                    .show()
                             }
                     } else {
                         Log.e(TAG, "User email address update failed", it.exception)
-                        Toast.makeText(this, "Email address update failed", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Email address update failed", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 }
             }
@@ -244,15 +253,16 @@ class ProfileActivity : AppCompatActivity(), ChangePasswordDialogFragment.Notice
 
         when {
             (oldPassword.text.toString() != newPassword.text.toString()) and (newPassword.text.length > 7) -> {
-                reference.child("users").child(user.uid).child("password").get().addOnSuccessListener {
-                    Log.d("firebase:", "got value ${it.value}")
-                    val result: BCrypt.Result = BCrypt.verifyer()
-                        .verify(oldPassword.text.toString().toCharArray(), it.value.toString())
-                    if (result.verified) {
-                        updatePassword(newPassword.text.toString())
-                    }
+                reference.child("users").child(user.uid).child("password").get()
+                    .addOnSuccessListener {
+                        Log.d("firebase:", "got value ${it.value}")
+                        val result: BCrypt.Result = BCrypt.verifyer()
+                            .verify(oldPassword.text.toString().toCharArray(), it.value.toString())
+                        if (result.verified) {
+                            updatePassword(newPassword.text.toString())
+                        }
 
-                }
+                    }
                 dialog.dismiss()
             }
             oldPassword.text.toString() == newPassword.text.toString() -> {
@@ -321,9 +331,75 @@ class ProfileActivity : AppCompatActivity(), ChangePasswordDialogFragment.Notice
         dialogCreated.findViewById<ImageButton>(R.id.camera_button)?.setOnClickListener {
             dialogCreated.dismiss()
             val intent = Intent(this, CameraActivity::class.java)
+//            val intent = Intent(this, PhotoApparatActivity::class.java)
             startActivity(intent)
         }
 
+        dialogCreated.findViewById<ImageButton>(R.id.media)?.setOnClickListener {
+            dialogCreated.dismiss()
+
+            val photoPickerIntent = Intent(Intent.ACTION_PICK)
+            photoPickerIntent.type = "image/*"
+            startActivityForResult(photoPickerIntent, 203)
+
+
+        }
+
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == 203) {
+            if (resultCode == RESULT_OK) {
+                val imageUri: Uri? = data?.data
+                val imageStream = contentResolver.openInputStream(imageUri!!)
+                val selectedImage = BitmapFactory.decodeStream(imageStream)
+                uploadImage(selectedImage)
+            }
+        }
+    }
+
+    private fun uploadImage(selectedImage: Bitmap?) {
+        val storageRef = storage.reference
+        val imageRef: StorageReference? = Firebase.auth.currentUser?.let {
+            storageRef.child("profile-images").child(it.uid)
+                .child((System.currentTimeMillis() / 1000).toString())
+        }
+
+        val baos = ByteArrayOutputStream()
+        selectedImage?.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val data = baos.toByteArray()
+
+        val uploadTask = imageRef?.putBytes(data)
+
+        val urlTask = uploadTask?.continueWithTask { task ->
+            if (!task.isSuccessful) {
+                task.exception?.let {
+                    throw it
+                }
+            }
+            imageRef.downloadUrl
+        }?.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val downloadUri = task.result
+                updateDatabase(downloadUri)
+            } else {
+                Log.e(TAG, "ImageUpload:failed", task.exception)
+            }
+        }
+    }
+
+    private fun updateDatabase(downloadUri: Uri?) {
+        val currentUser = Firebase.auth.currentUser!!
+        val database = Firebase.database.reference
+
+        val update = database.child("users").child(currentUser.uid).child("imageUrl")
+            .setValue(downloadUri.toString())
+
+        update.addOnSuccessListener {
+            Toast.makeText(this, "Image changed", Toast.LENGTH_SHORT).show()
+        }
     }
 
 
