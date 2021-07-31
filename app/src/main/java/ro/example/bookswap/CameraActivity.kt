@@ -1,21 +1,30 @@
 package ro.example.bookswap
 
 import android.Manifest
+import android.app.Activity
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.*
 import android.media.Image
 import android.net.Uri
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.util.Size
+import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.ktx.storage
 import kotlinx.android.synthetic.main.activity_camera.*
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -23,6 +32,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.collections.ArrayList
 
 
 class CameraActivity : AppCompatActivity() {
@@ -31,10 +41,20 @@ class CameraActivity : AppCompatActivity() {
     private lateinit var outputDirectory: File
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var context: Context
+    private lateinit var activity: String
+    private var uriArrayList: ArrayList<String> = ArrayList()
+    private val storage = Firebase.storage
+    private val id = System.currentTimeMillis() / 1000
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera)
+
+        activity = intent.getStringExtra("activity").toString()
+
+        if (activity != "addBook") {
+            finnish_button.visibility = View.GONE
+        }
 
         context = this
 
@@ -45,17 +65,31 @@ class CameraActivity : AppCompatActivity() {
             startCamera(BACK_CAMERA)
         } else {
             ActivityCompat.requestPermissions(
-                this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
+                this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
+            )
         }
 
         // Set up the listener for take photo button
         camera_capture_button.setOnClickListener {
             Log.d("CameraActivity:", "camera button pressed")
-            takePhoto() }
+            takePhoto()
+        }
 
         outputDirectory = getOutputDirectory()
 
         cameraExecutor = Executors.newSingleThreadExecutor()
+
+        finnish_button.setOnClickListener { returnResult() }
+    }
+
+    private fun returnResult() {
+        val data = Intent()
+
+        data.putStringArrayListExtra("photoUris", uriArrayList)
+
+        setResult(Activity.RESULT_OK, data)
+
+        finish()
     }
 
     private fun switchCamera() {
@@ -71,8 +105,10 @@ class CameraActivity : AppCompatActivity() {
         // Create time-stamped output file to hold the image
         val photoFile = File(
             outputDirectory,
-            SimpleDateFormat(FILENAME_FORMAT, Locale.US
-            ).format(System.currentTimeMillis()) + ".jpg")
+            SimpleDateFormat(
+                FILENAME_FORMAT, Locale.US
+            ).format(System.currentTimeMillis()) + ".jpg"
+        )
 
         // Create output options object which contains file + metadata
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
@@ -85,7 +121,9 @@ class CameraActivity : AppCompatActivity() {
 //            }
 //        })
         imageCapture.takePicture(
-            outputOptions, ContextCompat.getMainExecutor(this), object : ImageCapture.OnImageSavedCallback {
+            outputOptions,
+            ContextCompat.getMainExecutor(this),
+            object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
                     Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
                 }
@@ -95,11 +133,43 @@ class CameraActivity : AppCompatActivity() {
                     val msg = "Photo capture succeeded: $savedUri"
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
-                    val intent = Intent(context, ImageViewActivity::class.java)
-                    intent.putExtra("imageUri", savedUri.toString())
-                    startActivity(intent)
+                    if (activity != "addBook") {
+                        val intent = Intent(context, ImageViewActivity::class.java)
+                        intent.putExtra("imageUri", savedUri.toString())
+                        startActivity(intent)
+                    } else {
+                        postPhoto(savedUri)
+                    }
+
                 }
             })
+    }
+
+    private fun postPhoto(savedUri: Uri?) {
+        val storageRef = storage.reference
+        val imageRef: StorageReference? = Firebase.auth.currentUser?.let {
+            storageRef.child("books-images").child(it.uid).child((id +  (100..10000).random()).toString())
+        }
+
+        val uploadTask = savedUri?.let { imageRef?.putFile(it) }
+
+        val urlTask = uploadTask?.continueWithTask { task ->
+            if (!task.isSuccessful) {
+                task.exception?.let {
+                    throw it
+                }
+            }
+            imageRef?.downloadUrl
+        }?.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val downloadUri = task.result
+                Log.d("download uri", downloadUri.toString())
+                Toast.makeText(this, "Photo uploaded", Toast.LENGTH_SHORT).show()
+                uriArrayList.add(downloadUri.toString())
+            } else {
+                Log.e(ContentValues.TAG, "ImageUpload:failed", task.exception)
+            }
+        }
     }
 
     private fun startCamera(cameraBack: Boolean) {
@@ -131,9 +201,10 @@ class CameraActivity : AppCompatActivity() {
 
                 // Bind use cases to camera
                 cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageCapture)
+                    this, cameraSelector, preview, imageCapture
+                )
 
-            } catch(exc: Exception) {
+            } catch (exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
             }
 
@@ -143,12 +214,14 @@ class CameraActivity : AppCompatActivity() {
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
-            baseContext, it) == PackageManager.PERMISSION_GRANTED
+            baseContext, it
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun getOutputDirectory(): File {
         val mediaDir = externalMediaDirs.firstOrNull()?.let {
-            File(it, resources.getString(R.string.app_name)).apply { mkdirs() } }
+            File(it, resources.getString(R.string.app_name)).apply { mkdirs() }
+        }
         return if (mediaDir != null && mediaDir.exists())
             mediaDir else filesDir
     }
