@@ -7,14 +7,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.*
-import android.media.Image
 import android.net.Uri
-import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.util.Size
 import android.view.View
-import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
@@ -25,8 +22,11 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.TextRecognizerOptions
+import com.yalantis.ucrop.UCrop
 import kotlinx.android.synthetic.main.activity_camera.*
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -131,12 +131,18 @@ class CameraActivity : AppCompatActivity() {
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val savedUri = Uri.fromFile(photoFile)
                     val msg = "Photo capture succeeded: $savedUri"
-                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
-                    if (activity != "addBook") {
+                    if (activity != "addBook" && activity != "profileFragment") {
                         val intent = Intent(context, ImageViewActivity::class.java)
                         intent.putExtra("imageUri", savedUri.toString())
                         startActivity(intent)
+                    } else if (activity == "profileFragment") {
+
+                        UCrop.of(savedUri, savedUri)
+                            .start(this@CameraActivity)
+
+
                     } else {
                         postPhoto(savedUri)
                     }
@@ -145,10 +151,35 @@ class CameraActivity : AppCompatActivity() {
             })
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
+            val resultUri = UCrop.getOutput(data!!)
+            val image: InputImage = InputImage.fromFilePath(context, resultUri!!)
+
+
+            val recognizer =
+                TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+            val result = recognizer.process(image).addOnSuccessListener {
+                Toast.makeText(context, it.text, Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, AddBookActivity::class.java)
+                intent.putExtra("searchString", it.text)
+                startActivity(intent)
+                finish()
+
+            }
+
+        } else if (resultCode == UCrop.RESULT_ERROR) {
+            val cropError = UCrop.getError(data!!)
+        }
+    }
+
+
     private fun postPhoto(savedUri: Uri?) {
         val storageRef = storage.reference
         val imageRef: StorageReference? = Firebase.auth.currentUser?.let {
-            storageRef.child("books-images").child(it.uid).child((id +  (100..10000).random()).toString())
+            storageRef.child("books-images").child(it.uid)
+                .child((id + (100..10000).random()).toString())
         }
 
         val uploadTask = savedUri?.let { imageRef?.putFile(it) }
@@ -159,7 +190,7 @@ class CameraActivity : AppCompatActivity() {
                     throw it
                 }
             }
-            imageRef?.downloadUrl
+            imageRef?.downloadUrl!!
         }?.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val downloadUri = task.result

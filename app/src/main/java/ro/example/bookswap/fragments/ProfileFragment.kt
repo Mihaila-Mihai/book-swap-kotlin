@@ -2,6 +2,7 @@ package ro.example.bookswap.fragments
 
 import android.app.ActivityOptions
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -9,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.widget.AppCompatImageButton
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.ktx.auth
@@ -17,10 +19,13 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import de.hdodenhof.circleimageview.CircleImageView
 import ro.example.bookswap.AddBookActivity
+import ro.example.bookswap.CameraActivity
 import ro.example.bookswap.ProfileActivity
 import ro.example.bookswap.R
 
 class ProfileFragment : Fragment() {
+
+//    private val cropActivityResultContract = object: ActivityResultContract<Any?, Uri?>
 
     private lateinit var database: DatabaseReference
     private lateinit var profileImage: CircleImageView
@@ -56,8 +61,9 @@ class ProfileFragment : Fragment() {
 
         })
         view.findViewById<AppCompatImageButton>(R.id.add_book_button).setOnClickListener {
-            val intent = Intent(context, AddBookActivity::class.java)
-
+//            val intent = Intent(context, AddBookActivity::class.java)
+            val intent = Intent(context, CameraActivity::class.java)
+            intent.putExtra("activity", "profileFragment")
             startActivity(intent)
         }
 
