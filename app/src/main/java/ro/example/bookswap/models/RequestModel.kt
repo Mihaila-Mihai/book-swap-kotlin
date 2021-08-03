@@ -1,7 +1,5 @@
 package ro.example.bookswap.models
 
-import android.net.Uri
-
 object RequestModel {
     data class Result(val items: ArrayList<Items>)
     data class Items(val id: String, val volumeInfo: VolumeInfo)

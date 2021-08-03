@@ -1,10 +1,15 @@
 package ro.example.bookswap.fragments
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import com.bumptech.glide.Glide
+import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.fragment_discover.*
 import ro.example.bookswap.R
 
 // TODO: Rename parameter arguments, choose names that match
@@ -35,7 +40,12 @@ class DiscoverFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_discover, container, false)
+
+        val view = inflater.inflate(R.layout.fragment_discover, container, false)
+
+
+
+        return view
     }
 
     companion object {
