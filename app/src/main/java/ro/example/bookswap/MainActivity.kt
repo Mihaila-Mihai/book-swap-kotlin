@@ -2,8 +2,10 @@ package ro.example.bookswap
 
 import android.content.Intent
 import android.os.Bundle
+import android.transition.AutoTransition
 import android.transition.Explode
 import android.transition.Fade
+import android.transition.Transition
 import android.view.Window
 import android.widget.Button
 import android.widget.Toast
@@ -34,7 +36,7 @@ class MainActivity : AppCompatActivity(), ExitDialogFragment.NoticeDialogListene
         }
 
         with(window) {
-            requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
+            val requestFeature = requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
             exitTransition = Explode()
             enterTransition = Explode()
         }

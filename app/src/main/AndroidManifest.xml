@@ -19,6 +19,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BookSwap">
+        <activity android:name=".BookVisualisationActivity"></activity>
 
         <meta-data
             android:name="com.google.mlkit.vision.DEPENDENCIES"
@@ -28,8 +29,6 @@
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="fullSensor"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-
-
         <activity android:name=".AddBookActivity" />
         <activity android:name=".ImageViewActivity" />
         <activity android:name=".CameraActivity" />
