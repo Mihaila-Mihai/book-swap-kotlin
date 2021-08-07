@@ -340,6 +340,7 @@ class ProfileActivity : AppCompatActivity(), ChangePasswordDialogFragment.Notice
             startActivity(intent)
         }
 
+
         dialogCreated.findViewById<ImageButton>(R.id.media)?.setOnClickListener {
             dialogCreated.dismiss()
 
@@ -349,7 +350,6 @@ class ProfileActivity : AppCompatActivity(), ChangePasswordDialogFragment.Notice
 
 
         }
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

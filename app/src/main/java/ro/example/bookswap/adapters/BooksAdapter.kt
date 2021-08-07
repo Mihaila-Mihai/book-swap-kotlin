@@ -23,6 +23,7 @@ import ro.example.bookswap.BookVisualisationActivity
 import ro.example.bookswap.R
 import ro.example.bookswap.models.RequestModel
 import java.io.InputStream
+import android.util.Pair as UtilPair
 
 
 class BooksAdapter(
@@ -79,15 +80,54 @@ class BooksAdapter(
 //
 //            ActivityCompat.startActivity(context, intent, activityOptions.toBundle())
             val img = holder.thumbnail
+            val title = holder.textView
 
             val intent = Intent(context, BookVisualisationActivity::class.java)
             val bundle =
                 ActivityOptions.makeSceneTransitionAnimation(activity, img, "thumbnail").toBundle()
+
+            val options = ActivityOptions.makeSceneTransitionAnimation(
+                activity,
+                UtilPair.create(img, "thumbnail"),
+                UtilPair.create(title, "title")
+            )
+            intent.putExtra("title", items[position].volumeInfo.title)
             if (items[position].volumeInfo.imageLinks != null) {
                 intent.putExtra("thumbnail", items[position].volumeInfo.imageLinks.thumbnail)
             } else {
                 intent.putExtra("thumbnail", "default")
             }
+            if(items[position].volumeInfo.authors != null) {
+                var authorsString = ""
+                for(author in items[position].volumeInfo.authors) {
+                    authorsString += "$author, "
+                }
+                intent.putExtra("authors", authorsString)
+            } else {
+                intent.putExtra("authors", "undefined")
+            }
+            if(items[position].volumeInfo.categories != null) {
+                intent.putExtra("categories", items[position].volumeInfo.categories)
+            } else {
+                intent.putExtra("categories", "undefined")
+            }
+            if (items[position].volumeInfo.description != null) {
+                intent.putExtra("description", items[position].volumeInfo.description)
+            } else {
+                intent.putExtra("description", "undefined")
+            }
+            if (items[position].volumeInfo.pageCount != null) {
+                intent.putExtra("pageCount", items[position].volumeInfo.pageCount)
+            } else {
+                intent.putExtra("pageCount", "undefined")
+            }
+            if (items[position].volumeInfo.language != null) {
+                intent.putExtra("language", items[position].volumeInfo.language)
+            } else {
+                intent.putExtra("language", "undefined")
+            }
+            intent.putExtra("id", items[position].id)
+
             context.startActivity(intent, bundle)
 
         }

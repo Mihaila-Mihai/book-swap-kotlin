@@ -30,5 +30,8 @@
     <string name="email_address">Email address</string>
     <string name="change_password">Change password</string>
     <string name="sign_out">Sign out</string>
-
+    <string name="authors_not_found">Could not find authors</string>
+    <string name="description_not_found">Could not find description</string>
+    <string name="page_count_not_found">TBD</string>
+    <string name="language_not_found">TBE</string>
 </resources>
