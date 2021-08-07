@@ -1,20 +1,370 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/black"
     tools:context=".BookVisualisationActivity">
 
-    <ImageView
-        android:id="@+id/thumbnail"
-        android:layout_width="300dp"
-        android:layout_height="600dp"
-        android:layout_margin="15dp"
-        android:transitionName="thumbnail"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/alt_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/background"
+                android:layout_width="match_parent"
+                android:layout_height="500dp"
+                android:adjustViewBounds="true"
+                android:alpha="0.4"
+                android:background="@color/white"
+                android:scaleType="centerInside"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_editor_absoluteX="0dp" />
+
+            <ImageView
+                android:id="@+id/thumbnail"
+                android:layout_width="150dp"
+                android:layout_height="200dp"
+                android:layout_margin="50dp"
+                android:background="@color/white"
+                android:src="@mipmap/ic_launcher"
+                android:transitionName="thumbnail"
+                app:layout_constraintBottom_toTopOf="@id/title_of_the_book"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <EditText
+                android:id="@+id/title_of_the_book"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:background="@null"
+                android:maxWidth="200dp"
+                android:visibility="invisible"
+                android:text="Title"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:transitionName="title"
+                app:layout_constraintEnd_toEndOf="@id/thumbnail"
+                app:layout_constraintStart_toStartOf="@+id/thumbnail"
+                app:layout_constraintTop_toBottomOf="@id/thumbnail" />
+
+            <TextView
+                android:id="@+id/title_of_the_book_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:background="@null"
+                android:maxWidth="200dp"
+                android:text="Title"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:transitionName="title"
+                app:layout_constraintEnd_toEndOf="@id/thumbnail"
+                app:layout_constraintStart_toStartOf="@+id/thumbnail"
+                app:layout_constraintTop_toBottomOf="@id/thumbnail" />
+
+            <EditText
+                android:id="@+id/authors"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@null"
+                android:maxWidth="200dp"
+                android:maxHeight="50dp"
+                android:visibility="invisible"
+                android:text="Authors"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="@id/title_of_the_book"
+                app:layout_constraintStart_toStartOf="@id/title_of_the_book"
+                app:layout_constraintTop_toBottomOf="@id/title_of_the_book" />
+
+            <TextView
+                android:id="@+id/authors_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@null"
+                android:maxWidth="200dp"
+                android:maxHeight="50dp"
+                android:text="Authors"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="@id/title_of_the_book"
+                app:layout_constraintStart_toStartOf="@id/title_of_the_book"
+                app:layout_constraintTop_toBottomOf="@id/title_of_the_book" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginBottom="30dp"
+                android:alpha="0.4"
+                android:background="@drawable/round_container"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/authors">
+
+
+                <EditText
+                    android:id="@+id/page_count_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:background="@null"
+                    android:visibility="invisible"
+                    android:maxLength="5"
+                    android:text="30"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@id/book_title"
+                    app:layout_constraintEnd_toStartOf="@id/vertical_line"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/page_count_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:background="@null"
+                    android:maxLength="5"
+                    android:text="30"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@id/book_title"
+                    app:layout_constraintEnd_toStartOf="@id/vertical_line"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/book_title"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:gravity="center"
+                    android:text="Number of Pages"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@id/page_count_text"
+                    app:layout_constraintStart_toStartOf="@id/page_count_text"
+                    app:layout_constraintTop_toBottomOf="@id/page_count_text" />
+
+                <EditText
+                    android:id="@+id/language_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:background="@null"
+                    android:visibility="invisible"
+                    android:maxLength="4"
+                    android:text="30"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/page_count_text"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/vertical_line"
+                    app:layout_constraintTop_toTopOf="@id/page_count_text" />
+
+                <TextView
+                    android:id="@+id/language_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:background="@null"
+                    android:maxLength="4"
+                    android:text="30"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/page_count_text"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/vertical_line"
+                    app:layout_constraintTop_toTopOf="@id/page_count_text" />
+
+                <TextView
+                    android:id="@+id/language"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:gravity="center"
+                    android:text="Language"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@id/book_title"
+                    app:layout_constraintEnd_toEndOf="@id/language_text"
+                    app:layout_constraintStart_toStartOf="@id/language_text"
+                    app:layout_constraintTop_toTopOf="@id/book_title" />
+
+                <View
+                    android:id="@+id/vertical_line"
+                    android:layout_width="1dp"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@color/white"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/language"
+                    app:layout_constraintStart_toEndOf="@id/book_title"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <!--            <View-->
+            <!--                android:id="@+id/v"-->
+            <!--                android:layout_width="1dp"-->
+            <!--                android:layout_height="0dp"-->
+            <!--                android:layout_marginTop="10dp"-->
+            <!--                android:layout_marginBottom="10dp"-->
+            <!--                android:background="@color/white"-->
+            <!--                app:layout_constraintBottom_toBottomOf="@id/container"-->
+            <!--                app:layout_constraintTop_toTopOf="@id/container"-->
+            <!--                app:layout_constraintStart_toStartOf="@id/container"-->
+            <!--                app:layout_constraintEnd_toEndOf="@id/container"/>-->
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/container2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/alt_container">
+
+            <TextView
+                android:id="@+id/description_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:text="Description"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:visibility="invisible"
+                android:background="@null"
+                android:hint="Description content"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toTopOf="@id/image_slider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/description_text"
+                app:layout_constraintTop_toBottomOf="@id/description_text" />
+
+            <TextView
+                android:id="@+id/description_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:background="@null"
+                android:hint="Description content"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="@id/description"
+                app:layout_constraintEnd_toEndOf="@id/description"
+                app:layout_constraintTop_toTopOf="@id/description"
+                app:layout_constraintBottom_toBottomOf="@id/description"/>
+
+            <com.denzcoskun.imageslider.ImageSlider
+                android:id="@+id/image_slider"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_margin="20dp"
+                android:background="@color/gray"
+                app:iss_auto_cycle="true"
+                app:iss_delay="1000"
+                app:iss_period="3000"
+                app:layout_constraintBottom_toTopOf="@id/add_book_button_visual"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/description" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/add_photo_button"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_margin="10dp"
+                android:background="@drawable/round_btn"
+                android:src="@drawable/ic_plus"
+                app:layout_constraintBottom_toBottomOf="@id/image_slider"
+                app:layout_constraintEnd_toEndOf="@id/image_slider" />
+
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/edit_content_button"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/custom_btn"
+                android:src="@drawable/ic_edit_2"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/add_book_button_visual"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/image_slider" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/add_book_button_visual"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="30dp"
+                android:background="@drawable/custom_btn"
+                android:paddingStart="70dp"
+                android:paddingEnd="70dp"
+                android:text="Add book"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="@id/edit_content_button"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/edit_content_button"
+                app:layout_constraintTop_toTopOf="@id/edit_content_button" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

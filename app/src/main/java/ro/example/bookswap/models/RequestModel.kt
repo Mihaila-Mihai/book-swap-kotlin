@@ -10,7 +10,8 @@ object RequestModel {
         val pageCount: String,
         val categories: ArrayList<String>,
         val imageLinks: ImageLinks,
-        val previewLink: String
+        val previewLink: String,
+        val language: String
     )
 
     data class ImageLinks(val smallThumbnail: String, val thumbnail: String)

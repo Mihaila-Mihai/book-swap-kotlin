@@ -1,6 +1,7 @@
 package ro.example.bookswap.fragments
 
 import android.app.ActivityOptions
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -12,16 +13,26 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.widget.AppCompatImageButton
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import de.hdodenhof.circleimageview.CircleImageView
+import kotlinx.android.synthetic.main.fragment_profile.*
+import kotlinx.android.synthetic.main.fragment_profile.view.*
 import ro.example.bookswap.AddBookActivity
 import ro.example.bookswap.CameraActivity
 import ro.example.bookswap.ProfileActivity
 import ro.example.bookswap.R
+import ro.example.bookswap.adapters.PersonalBooksAdapter
+import ro.example.bookswap.decoration.TopSpacingItemDecoration
+import ro.example.bookswap.models.Book
 
 class ProfileFragment : Fragment() {
 
@@ -29,6 +40,7 @@ class ProfileFragment : Fragment() {
 
     private lateinit var database: DatabaseReference
     private lateinit var profileImage: CircleImageView
+    private lateinit var bookAdapter: PersonalBooksAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,6 +79,38 @@ class ProfileFragment : Fragment() {
             startActivity(intent)
         }
 
+
+        val booksReference = database.child("books")
+        val currentUser = Firebase.auth.currentUser?.uid
+        var books: ArrayList<Book> = ArrayList()
+
+        booksReference.addValueEventListener(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                books.clear()
+
+                for (bookElement in snapshot.children) {
+                    val book = bookElement.getValue<Book>()
+
+                    if (book?.owner == currentUser) {
+                        books.add(book!!)
+                    }
+                }
+
+                view.book_list.apply {
+                    layoutManager = LinearLayoutManager(view.context)
+                    val topSpacingDecoration = TopSpacingItemDecoration(30)
+                    addItemDecoration(topSpacingDecoration)
+                    bookAdapter = PersonalBooksAdapter(books, view.context)
+                    adapter = bookAdapter
+                }
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
 
 
         return view
