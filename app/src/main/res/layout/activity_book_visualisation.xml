@@ -140,7 +140,7 @@
                     android:textColor="@color/white"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toTopOf="@id/book_title"
+                    app:layout_constraintBottom_toTopOf="@id/book_title_swap_view"
                     app:layout_constraintEnd_toStartOf="@id/vertical_line"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -156,13 +156,13 @@
                     android:textColor="@color/white"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toTopOf="@id/book_title"
+                    app:layout_constraintBottom_toTopOf="@id/book_title_swap_view"
                     app:layout_constraintEnd_toStartOf="@id/vertical_line"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/book_title"
+                    android:id="@+id/book_title_swap_view"
                     android:layout_width="60dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
@@ -217,10 +217,10 @@
                     android:text="Language"
                     android:textColor="@color/white"
                     android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="@id/book_title"
+                    app:layout_constraintBottom_toBottomOf="@id/book_title_swap_view"
                     app:layout_constraintEnd_toEndOf="@id/language_text"
                     app:layout_constraintStart_toStartOf="@id/language_text"
-                    app:layout_constraintTop_toTopOf="@id/book_title" />
+                    app:layout_constraintTop_toTopOf="@id/book_title_swap_view" />
 
                 <View
                     android:id="@+id/vertical_line"
@@ -231,7 +231,7 @@
                     android:background="@color/white"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/language"
-                    app:layout_constraintStart_toEndOf="@id/book_title"
+                    app:layout_constraintStart_toEndOf="@id/book_title_swap_view"
                     app:layout_constraintTop_toTopOf="parent" />
 
 

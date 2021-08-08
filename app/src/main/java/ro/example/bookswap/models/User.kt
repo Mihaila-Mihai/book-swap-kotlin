@@ -6,8 +6,9 @@ class User(
     var email: String = "",
     var description: String = "",
     var provider: String = "",
-    var imageUrl: String = ""
+    var imageUrl: String = "",
+    var id: String = ""
 ) {
-    constructor() : this("","","","","", "")
+    constructor() : this("","","","","", "", "")
 
 }

@@ -24,7 +24,7 @@
 
 
         <TextView
-            android:id="@+id/book_title"
+            android:id="@+id/book_title_swap_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxWidth="200dp"
@@ -45,9 +45,9 @@
             android:layout_marginBottom="10dp"
             android:text="Autori"
             android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="@id/book_title"
-            app:layout_constraintEnd_toEndOf="@id/book_title"
-            app:layout_constraintTop_toBottomOf="@id/book_title"
+            app:layout_constraintStart_toStartOf="@id/book_title_swap_view"
+            app:layout_constraintEnd_toEndOf="@id/book_title_swap_view"
+            app:layout_constraintTop_toBottomOf="@id/book_title_swap_view"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
 

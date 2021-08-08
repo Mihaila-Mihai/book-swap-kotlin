@@ -112,10 +112,11 @@ class BookVisualisationActivity : AppCompatActivity() {
                     uriArray += "$uri,"
                 }
             }
+            val id = (System.currentTimeMillis() / 1000 + (1..100000).random()).toString()
             val newBook = Book(
                 title = title_of_the_book_text_view.text.toString(),
                 authors = authors_text_view.text.toString(),
-                id = bookId,
+                id = id,
                 thumbnail = img,
                 description = description_text_view.text.toString(),
                 pageCount = page_count_text_view.text.toString(),
@@ -124,7 +125,7 @@ class BookVisualisationActivity : AppCompatActivity() {
                 imageSliderUris = uriArray
             )
 
-            val bookReference = database.child("books").push().setValue(newBook)
+            val bookReference = database.child("books").child(id).setValue(newBook)
             bookReference.addOnSuccessListener {
                 Toast.makeText(this, "Book added!", Toast.LENGTH_SHORT).show()
             }
