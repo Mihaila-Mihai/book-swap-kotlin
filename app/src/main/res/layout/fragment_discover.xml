@@ -5,11 +5,9 @@
     android:layout_height="match_parent"
     tools:context=".fragments.DiscoverFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <com.yuyakaido.android.cardstackview.CardStackView
+        android:id="@+id/card_stack"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="hello_blank_fragment_discover" />
-
+        android:layout_height="match_parent"/>
 
 </FrameLayout>

@@ -43,11 +43,6 @@ class ProfileFragment : Fragment() {
     private lateinit var bookAdapter: PersonalBooksAdapter
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
-
     override fun onResume() {
         super.onResume()
         setProfilePicture()

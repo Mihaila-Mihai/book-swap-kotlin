@@ -22,7 +22,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/username"
+            android:id="@+id/username_swipe_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -42,8 +42,8 @@
             android:background="@drawable/round_btn"
             android:src="@drawable/ic_settings"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/username"
-            app:layout_constraintTop_toBottomOf="@+id/username" />
+            app:layout_constraintStart_toEndOf="@+id/username_swipe_view"
+            app:layout_constraintTop_toBottomOf="@+id/username_swipe_view" />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/history_button"
@@ -51,9 +51,9 @@
             android:layout_height="50dp"
             android:background="@drawable/round_btn"
             android:src="@drawable/ic_history"
-            app:layout_constraintEnd_toStartOf="@+id/username"
+            app:layout_constraintEnd_toStartOf="@+id/username_swipe_view"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/username" />
+            app:layout_constraintTop_toBottomOf="@+id/username_swipe_view" />
 
         <TextView
             android:id="@+id/textView4"
@@ -63,7 +63,7 @@
             android:textAllCaps="true"
             android:textSize="12sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@+id/username"
+            app:layout_constraintEnd_toStartOf="@+id/username_swipe_view"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/history_button" />
 
@@ -76,7 +76,7 @@
             android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/username"
+            app:layout_constraintStart_toEndOf="@+id/username_swipe_view"
             app:layout_constraintTop_toBottomOf="@+id/settings_button" />
 
 
@@ -89,7 +89,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/settings_button"
             app:layout_constraintStart_toEndOf="@+id/history_button"
-            app:layout_constraintTop_toBottomOf="@+id/username"
+            app:layout_constraintTop_toBottomOf="@+id/username_swipe_view"
             app:layout_constraintVertical_bias="0.120000005" />
 
 

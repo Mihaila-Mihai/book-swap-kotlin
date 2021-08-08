@@ -76,6 +76,10 @@ dependencies {
     // Picasso
     implementation 'com.squareup.picasso:picasso:2.71828'
 
+    // Swipe cards
+    implementation 'com.lorentzos.swipecards:library:1.0.9'
+    implementation "com.yuyakaido.android:card-stack-view:2.3.3"
+
     // Bcrypt
     implementation group: 'at.favre.lib', name: 'bcrypt', version: '0.9.0'
 

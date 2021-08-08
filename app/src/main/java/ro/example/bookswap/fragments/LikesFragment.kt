@@ -1,60 +1,74 @@
 package ro.example.bookswap.fragments
 
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
+import com.google.firebase.ktx.Firebase
+import kotlinx.android.synthetic.main.fragment_likes.*
 import ro.example.bookswap.R
+import ro.example.bookswap.adapters.LikesAdapter
+import ro.example.bookswap.adapters.PersonalBooksAdapter
+import ro.example.bookswap.decoration.TopSpacingItemDecoration
+import ro.example.bookswap.models.Like
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [LikesFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class LikesFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var likeAdapter: LikesAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_likes, container, false)
+
+        val view: View? = inflater.inflate(R.layout.fragment_likes, container, false)
+
+        val reference = Firebase.database.reference.child("likes").child(Firebase.auth.currentUser?.uid!!)
+
+        val likedBy: ArrayList<Like> = ArrayList()
+
+        reference.addValueEventListener(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (el in snapshot.children) {
+                    val like = el.getValue<Like>()
+                    likedBy.add(like!!)
+                }
+                Log.d("size", likedBy.size.toString())
+
+                try {
+                    likes_recycler.apply {
+                        layoutManager = LinearLayoutManager(view?.context)
+                        val topSpacingDecoration = TopSpacingItemDecoration(30)
+                        addItemDecoration(topSpacingDecoration)
+                        likeAdapter = LikesAdapter(likedBy, view?.context!!)
+                        adapter = likeAdapter
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Recycler", e)
+                }
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
+
+
+        return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment LikesFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            LikesFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
+
 }
