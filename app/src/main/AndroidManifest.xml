@@ -19,7 +19,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BookSwap">
-        <activity android:name=".BookVisualisationActivity"></activity>
+        <activity android:name=".MessageActivity"></activity>
+        <activity android:name=".BookVisualisationActivity" />
 
         <meta-data
             android:name="com.google.mlkit.vision.DEPENDENCIES"
