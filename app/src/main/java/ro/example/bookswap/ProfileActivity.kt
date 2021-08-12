@@ -61,7 +61,7 @@ class ProfileActivity : AppCompatActivity(), ChangePasswordDialogFragment.Notice
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
-        profileImage = findViewById(R.id.profile_image)
+        profileImage = findViewById(R.id.profile_image_message)
         username = findViewById(R.id.username_edit)
         emailAddress = findViewById(R.id.email_address)
         userDescription = findViewById(R.id.user_description)
@@ -87,7 +87,7 @@ class ProfileActivity : AppCompatActivity(), ChangePasswordDialogFragment.Notice
         findViewById<AppCompatImageButton>(R.id.about_you_apply).setOnClickListener { changeUserDescription() }
         findViewById<AppCompatImageButton>(R.id.email_address_button).setOnClickListener { changeEmailAddress() }
         findViewById<Button>(R.id.sign_out_button).setOnClickListener { signOut() }
-        findViewById<CircleImageView>(R.id.profile_image).setOnClickListener { changeProfileImage() }
+        findViewById<CircleImageView>(R.id.profile_image_message).setOnClickListener { changeProfileImage() }
 
 
 

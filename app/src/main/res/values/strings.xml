@@ -35,4 +35,8 @@
     <string name="page_count_not_found">TBD</string>
     <string name="language_not_found">TBE</string>
     <string name="like_message">%1s likes your book \'%2s\'</string>
+    <string name="unmatch">unmatch</string>
+    <string name="button_to_unmatch_users">Button to unmatch users</string>
+    <string name="swap">swap</string>
+    <string name="button_to_swap_books">Button to swap books</string>
 </resources>

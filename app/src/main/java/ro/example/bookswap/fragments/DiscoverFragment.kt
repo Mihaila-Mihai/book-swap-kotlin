@@ -10,6 +10,7 @@ import android.view.animation.LinearInterpolator
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DefaultItemAnimator
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
@@ -65,19 +66,19 @@ class DiscoverFragment : Fragment() {
             }
 
             override fun onCardRewound() {
-                Toast.makeText(view?.context, "Card Rewound", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(view?.context, "Card Rewound", Toast.LENGTH_SHORT).show()
             }
 
             override fun onCardCanceled() {
-                Toast.makeText(view?.context, "Card Canceled", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(view?.context, "Card Canceled", Toast.LENGTH_SHORT).show()
             }
 
             override fun onCardAppeared(view: View?, position: Int) {
-                Toast.makeText(view?.context, "Card Appeared", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(view?.context, "Card Appeared", Toast.LENGTH_SHORT).show()
             }
 
             override fun onCardDisappeared(view: View?, position: Int) {
-                Toast.makeText(view?.context, "Card Disappeared", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(view?.context, "Card Disappeared", Toast.LENGTH_SHORT).show()
             }
 
         })
@@ -85,11 +86,14 @@ class DiscoverFragment : Fragment() {
 
 
         database = Firebase.database.reference
+        val currentUser = Firebase.auth.currentUser?.uid!!
         database.child("books").get().addOnSuccessListener {
             for (bookElement in it.children) {
                 Log.d("firebase", "Got value ${bookElement.value}")
                 val book = bookElement.getValue<Book>()
-                books.add(book!!)
+                if (book?.owner != currentUser) {
+                    books.add(book!!)
+                }
             }
 
             size = books.size
