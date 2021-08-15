@@ -9,7 +9,7 @@
         android:id="@+id/page_2"
         android:enabled="true"
         android:icon="@drawable/ic_like"
-        android:title="@string/likes"/>
+        android:title="@string/notifications"/>
     <item
         android:id="@+id/page_3"
         android:enabled="true"

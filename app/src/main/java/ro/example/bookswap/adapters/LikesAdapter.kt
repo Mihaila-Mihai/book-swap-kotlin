@@ -1,6 +1,7 @@
 package ro.example.bookswap.adapters
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
+import ro.example.bookswap.ProfileVisualisationActivity
 import ro.example.bookswap.R
 import ro.example.bookswap.models.Book
 import ro.example.bookswap.models.Like
@@ -48,7 +50,10 @@ class LikesAdapter(
         }
 
         holder.itemView.setOnClickListener {
-            Log.d("hello", "click")
+            val intent = Intent(context, ProfileVisualisationActivity::class.java)
+            intent.putExtra("userId", items[position].userId)
+
+            context.startActivity(intent)
         }
 
         holder.itemView.setOnLongClickListener {

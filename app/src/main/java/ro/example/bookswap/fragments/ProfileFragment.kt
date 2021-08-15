@@ -11,6 +11,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSnapHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -91,6 +93,8 @@ class ProfileFragment : Fragment() {
                     layoutManager = LinearLayoutManager(view.context)
                     val topSpacingDecoration = TopSpacingItemDecoration(30)
                     addItemDecoration(topSpacingDecoration)
+//                    val snapHelper = LinearSnapHelper()
+//                    snapHelper.attachToRecyclerView(view.book_list)
                     bookAdapter = PersonalBooksAdapter(books, view.context)
                     adapter = bookAdapter
                 }

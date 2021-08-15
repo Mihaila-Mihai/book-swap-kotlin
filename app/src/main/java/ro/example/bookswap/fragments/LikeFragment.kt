@@ -15,30 +15,32 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
-import kotlinx.android.synthetic.main.fragment_likes.*
+import kotlinx.android.synthetic.main.fragment_like.*
 import ro.example.bookswap.R
 import ro.example.bookswap.adapters.LikesAdapter
-import ro.example.bookswap.adapters.PersonalBooksAdapter
 import ro.example.bookswap.decoration.TopSpacingItemDecoration
 import ro.example.bookswap.models.Like
 
 
-class LikesFragment : Fragment() {
+class LikeFragment : Fragment() {
 
     private lateinit var likeAdapter: LikesAdapter
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        // Inflate the layout for this fragment
 
-        val view: View? = inflater.inflate(R.layout.fragment_likes, container, false)
+        val view: View? = inflater.inflate(R.layout.fragment_like, container, false)
 
-        val reference = Firebase.database.reference.child("likes").child(Firebase.auth.currentUser?.uid!!)
+        val reference =
+            Firebase.database.reference.child("likes").child(Firebase.auth.currentUser?.uid!!)
 
         val likedBy: ArrayList<Like> = ArrayList()
 
-        reference.addValueEventListener(object: ValueEventListener {
+        reference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (el in snapshot.children) {
                     val like = el.getValue<Like>()
@@ -66,9 +68,7 @@ class LikesFragment : Fragment() {
 
         })
 
-
         return view
     }
-
 
 }

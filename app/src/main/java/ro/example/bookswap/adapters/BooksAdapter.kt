@@ -35,7 +35,7 @@ class BooksAdapter(
 
 
     class BookViewHolder constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var textView: TextView = itemView.findViewById<TextView>(R.id.title_of_the_book) as TextView
+        var textView: TextView = itemView.findViewById(R.id.title_of_the_book) as TextView
         val authors: TextView = itemView.findViewById(R.id.authors_of_the_book) as TextView
         val thumbnail: ImageView = itemView.findViewById(R.id.thumbnail) as ImageView
 
