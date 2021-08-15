@@ -1,5 +1,6 @@
 package ro.example.bookswap
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -28,6 +29,8 @@ class MessageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_message)
 
+        userId = intent.getStringExtra("user")!!
+
         toolbar.setNavigationOnClickListener {
             finish()
         }
@@ -38,17 +41,22 @@ class MessageActivity : AppCompatActivity() {
             when (menuItem.itemId) {
                 R.id.unmatch -> {
                     Toast.makeText(this, "Unmatch :(", Toast.LENGTH_SHORT).show()
+                    // TODO - implement unmatch functionality
                     true
                 }
                 R.id.swap -> {
-                    Toast.makeText(this, "swap", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(this, "swap", Toast.LENGTH_SHORT).show()
+                    // TODO - implement swap functionality
+                    val intent = Intent(this, SwapActivity::class.java)
+                    intent.putExtra("userId", userId)
+                    startActivity(intent)
                     true
                 }
                 else -> false
             }
         }
 
-        userId = intent.getStringExtra("user")!!
+
         val userRef = reference.child("users").child(userId)
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {

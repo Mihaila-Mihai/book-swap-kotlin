@@ -19,7 +19,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BookSwap">
-        <activity android:name=".MessageActivity"></activity>
+        <activity android:name=".SwapActivity"></activity>
+        <activity android:name=".ProfileVisualisationActivity" />
+        <activity android:name=".MessageActivity" />
         <activity android:name=".BookVisualisationActivity" />
 
         <meta-data

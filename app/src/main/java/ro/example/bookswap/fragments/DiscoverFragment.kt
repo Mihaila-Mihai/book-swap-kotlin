@@ -54,14 +54,14 @@ class DiscoverFragment : Fragment() {
                     position++
                 }
                 if (direction == Direction.Left) {
-                    Toast.makeText(view.context, "Left", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(view.context, "Left", Toast.LENGTH_SHORT).show()
                     position++
                 }
                 if (direction == Direction.Top) {
-                    Toast.makeText(view.context, "Top", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(view.context, "Top", Toast.LENGTH_SHORT).show()
                 }
                 if (direction == Direction.Bottom) {
-                    Toast.makeText(view.context, "Bottom", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(view.context, "Bottom", Toast.LENGTH_SHORT).show()
                 }
             }
 
