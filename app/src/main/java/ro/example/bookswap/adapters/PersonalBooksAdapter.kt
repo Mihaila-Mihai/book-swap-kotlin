@@ -1,6 +1,8 @@
 package ro.example.bookswap.adapters
 
 import android.content.Context
+import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,7 +10,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Picasso
+import ro.example.bookswap.BookVisualisationActivity
 import ro.example.bookswap.R
 import ro.example.bookswap.models.Book
 
@@ -17,6 +22,8 @@ class PersonalBooksAdapter(
     val context: Context
 ) :
     RecyclerView.Adapter<PersonalBooksAdapter.BookViewHolder>() {
+
+    val currentUser = Firebase.auth.currentUser?.uid
 
 
     class BookViewHolder constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -38,11 +45,21 @@ class PersonalBooksAdapter(
         val newImgUri = "https:" + imgArray[1]
         Picasso.get().load(newImgUri).into(holder.thumbnailImage)
 
-        holder.itemView.setOnClickListener { onItemClicked() }
+        holder.itemView.setOnClickListener { onItemClicked(items[position]) }
     }
 
-    private fun onItemClicked() {
-        Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
+    private fun onItemClicked(book: Book) {
+        val intent = Intent(context, BookVisualisationActivity::class.java)
+//        Toast.makeText(context, (book.owner == currentUser).toString(), Toast.LENGTH_SHORT).show()
+        if (book.owner == currentUser) {
+            intent.putExtra("personal", "true")
+//            Toast.makeText(context, "true", Toast.LENGTH_SHORT).show()
+        } else {
+//            Toast.makeText(context, "false", Toast.LENGTH_SHORT).show()
+            intent.putExtra("personal", "notPersonal")
+        }
+        intent.putExtra("id", book.id)
+        context.startActivity(intent)
     }
 
     override fun getItemCount(): Int {

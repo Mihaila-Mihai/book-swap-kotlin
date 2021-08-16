@@ -20,12 +20,13 @@ import ro.example.bookswap.R
 import ro.example.bookswap.adapters.LikesAdapter
 import ro.example.bookswap.adapters.SwapsAdapter
 import ro.example.bookswap.decoration.TopSpacingItemDecoration
+import ro.example.bookswap.enums.Status
 import ro.example.bookswap.models.Swap
 
 
 class SwapsFragment : Fragment() {
 
-    val ref = Firebase.database.reference
+    private val ref = Firebase.database.reference
     val currentUser = Firebase.auth.currentUser?.uid
     private lateinit var swapsAdapter: SwapsAdapter
 
@@ -43,8 +44,8 @@ class SwapsFragment : Fragment() {
                 swaps.clear()
                 for (el in snapshot.children) {
                     val swap = el.getValue<Swap>()
-                    if (swap?.sender == currentUser || swap?.receiver == currentUser) {
-                        swaps.add(swap!!)
+                    if ((swap?.sender == currentUser || swap?.receiver == currentUser) && swap?.status == Status.IN_PROGRESS) {
+                        swaps.add(swap)
                     }
                 }
 

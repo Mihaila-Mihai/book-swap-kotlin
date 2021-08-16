@@ -29,6 +29,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_margin="20dp"
             android:hint="@string/username"
+            android:textAlignment="center"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"

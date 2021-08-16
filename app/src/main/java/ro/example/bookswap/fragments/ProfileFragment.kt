@@ -4,15 +4,13 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatImageButton
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSnapHelper
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -31,6 +29,7 @@ import ro.example.bookswap.R
 import ro.example.bookswap.adapters.PersonalBooksAdapter
 import ro.example.bookswap.decoration.TopSpacingItemDecoration
 import ro.example.bookswap.models.Book
+import ro.example.bookswap.models.User
 
 class ProfileFragment : Fragment() {
 
@@ -58,13 +57,15 @@ class ProfileFragment : Fragment() {
 
         setProfilePicture()
 
-        view.findViewById<AppCompatImageButton>(R.id.settings_button).setOnClickListener(View.OnClickListener {
+        view.findViewById<AppCompatImageButton>(R.id.settings_button).setOnClickListener {
             val intent = Intent(context, ProfileActivity::class.java)
 
-            startActivity(intent,
-                ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
+            startActivity(
+                intent,
+                ActivityOptions.makeSceneTransitionAnimation(activity).toBundle()
+            )
 
-        })
+        }
         view.findViewById<AppCompatImageButton>(R.id.add_book_button).setOnClickListener {
 //            val intent = Intent(context, AddBookActivity::class.java)
             val intent = Intent(context, CameraActivity::class.java)
@@ -75,7 +76,7 @@ class ProfileFragment : Fragment() {
 
         val booksReference = database.child("books")
         val currentUser = Firebase.auth.currentUser?.uid
-        var books: ArrayList<Book> = ArrayList()
+        val books: ArrayList<Book> = ArrayList()
 
         booksReference.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -113,16 +114,18 @@ class ProfileFragment : Fragment() {
 
     private fun setProfilePicture() {
         val uid = Firebase.auth.currentUser?.uid!!
-        database.child("users").child(uid).child("imageUrl").get().addOnSuccessListener {
-            if (it.value == "default") {
+        database.child("users").child(uid).get().addOnSuccessListener {
+            val user : User? = it.getValue<User>()
+            if (user?.imageUrl == "default") {
                 profileImage.setImageResource(R.drawable.ic_user)
             } else {
                 try {
-                    Glide.with(this).load(it.value).into(profileImage)
+                    Glide.with(this).load(user?.imageUrl).into(profileImage)
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
             }
+            username_swipe_view.text = user?.username
         }.addOnFailureListener {
             Toast.makeText(context, "Profile picture load failed", Toast.LENGTH_SHORT).show()
             Log.e("profileActivityPicture:", "failed", it.cause)

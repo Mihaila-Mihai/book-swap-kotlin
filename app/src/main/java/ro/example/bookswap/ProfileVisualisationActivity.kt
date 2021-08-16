@@ -3,7 +3,6 @@ package ro.example.bookswap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -14,7 +13,6 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_profile_visualisation.*
-import ro.example.bookswap.adapters.BooksAdapter
 import ro.example.bookswap.adapters.PersonalBooksAdapter
 import ro.example.bookswap.decoration.TopSpacingItemDecoration
 import ro.example.bookswap.models.Book
@@ -37,18 +35,18 @@ class ProfileVisualisationActivity : AppCompatActivity() {
         val userId = intent.getStringExtra("userId")
 
         fillUserUI(userId)
-        fullUserBooksUI(userId)
+
 
     }
 
-    private fun fullUserBooksUI(userId: String?) {
+    private fun fillUserBooksUI(userId: String?) {
         val books: ArrayList<Book> = ArrayList()
         Firebase.database.reference.child("books").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 books.clear()
                 for (el in snapshot.children) {
                     val book = el.getValue<Book>()
-                    if (book?.owner == currentUser) {
+                    if (book?.owner == user.id) {
                         books.add(book)
                     }
                 }
@@ -75,6 +73,7 @@ class ProfileVisualisationActivity : AppCompatActivity() {
                 user = snapshot.getValue<User>()!!
                 Picasso.get().load(user.imageUrl).fit().centerCrop().into(user_image_like_view)
                 username_like_view.text = user.username
+                fillUserBooksUI(userId)
             }
 
             override fun onCancelled(error: DatabaseError) {

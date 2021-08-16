@@ -1,6 +1,7 @@
 package ro.example.bookswap.adapters
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +17,7 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
+import ro.example.bookswap.BookVisualisationActivity
 import ro.example.bookswap.R
 import ro.example.bookswap.models.Book
 import ro.example.bookswap.models.Like
@@ -26,6 +28,9 @@ class CardStackAdapter(
     private val items: ArrayList<Book>,
     val context: Context
 ) : RecyclerView.Adapter<CardStackAdapter.CardStackViewHolder>() {
+
+    val currentUser = Firebase.auth.currentUser?.uid
+    private var pos: Int = 0
 
     private val reference: DatabaseReference = Firebase.database.reference
     private lateinit var owner: User
@@ -47,6 +52,8 @@ class CardStackAdapter(
     }
 
     override fun onBindViewHolder(holder: CardStackViewHolder, position: Int) {
+        val book = items[position]
+        pos++
         viewHolder = holder
         holder.titleView.text = items[position].title
         holder.authorsView.text = items[position].authors
@@ -62,7 +69,20 @@ class CardStackAdapter(
             Picasso.get().load(owner.imageUrl).fit().centerCrop().into(holder.userImage)
         }
 
-        holder.itemView.setOnClickListener { onItemClicked() }
+        holder.itemView.setOnClickListener {
+//            Toast.makeText(context, position.toString() + book.id, Toast.LENGTH_SHORT).show()
+            val intent = Intent(context, BookVisualisationActivity::class.java)
+//        Toast.makeText(context, (book.owner == currentUser).toString(), Toast.LENGTH_SHORT).show()
+            if (book.owner == currentUser) {
+                intent.putExtra("personal", "true")
+//            Toast.makeText(context, "true", Toast.LENGTH_SHORT).show()
+            } else {
+//            Toast.makeText(context, "false", Toast.LENGTH_SHORT).show()
+                intent.putExtra("personal", "discover")
+            }
+            intent.putExtra("id", book.id)
+            context.startActivity(intent)
+        }
     }
 
     fun onSwipe(position: Int) {
@@ -147,7 +167,7 @@ class CardStackAdapter(
     }
 
     private fun onItemClicked() {
-        Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
+
     }
 
     override fun getItemCount(): Int {

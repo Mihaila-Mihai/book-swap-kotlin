@@ -100,11 +100,11 @@ class DiscoverFragment : Fragment() {
             Log.d("Books", books.toString())
 
             manager.setStackFrom(StackFrom.None)
-            manager.setVisibleCount(3)
+            manager.setVisibleCount(2)
             manager.setTranslationInterval(8.0F)
             manager.setScaleInterval(0.95F)
             manager.setSwipeThreshold(0.3F)
-            manager.setMaxDegree(40.0F)
+            manager.setMaxDegree(20.0F)
             manager.setDirections(Direction.HORIZONTAL)
             manager.setCanScrollHorizontal(true)
             manager.setSwipeableMethod(SwipeableMethod.Manual)
