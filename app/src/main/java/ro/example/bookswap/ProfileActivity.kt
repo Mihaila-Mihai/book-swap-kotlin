@@ -34,6 +34,7 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
+import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.android.synthetic.main.activity_profile.*
 import ro.example.bookswap.fragments.ChangePasswordDialogFragment
@@ -45,7 +46,7 @@ class ProfileActivity : AppCompatActivity(), ChangePasswordDialogFragment.Notice
 
     private lateinit var user: FirebaseUser
     private lateinit var database: DatabaseReference
-    private lateinit var profileImage: CircleImageView
+    private lateinit var profileImage: ImageView
     private lateinit var username: EditText
     private lateinit var emailAddress: EditText
     private lateinit var userDescription: EditText
@@ -60,6 +61,18 @@ class ProfileActivity : AppCompatActivity(), ChangePasswordDialogFragment.Notice
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
+
+        toolbar_settings.setNavigationOnClickListener { finish() }
+        toolbar_settings.title = "Settings"
+        toolbar_settings.setOnMenuItemClickListener { menuItem ->
+            when(menuItem.itemId) {
+                R.id.sign_out -> {
+                    signOut()
+                    true
+                }
+                else -> false
+            }
+        }
 
         profileImage = findViewById(R.id.profile_image_message)
         username = findViewById(R.id.username_edit)
@@ -86,8 +99,8 @@ class ProfileActivity : AppCompatActivity(), ChangePasswordDialogFragment.Notice
         findViewById<AppCompatImageButton>(R.id.username_apply).setOnClickListener { changeUsername() }
         findViewById<AppCompatImageButton>(R.id.about_you_apply).setOnClickListener { changeUserDescription() }
         findViewById<AppCompatImageButton>(R.id.email_address_button).setOnClickListener { changeEmailAddress() }
-        findViewById<Button>(R.id.sign_out_button).setOnClickListener { signOut() }
-        findViewById<CircleImageView>(R.id.profile_image_message).setOnClickListener { changeProfileImage() }
+//        findViewById<Button>(R.id.sign_out_button).setOnClickListener { signOut() }
+        findViewById<ImageView>(R.id.profile_image_message).setOnClickListener { changeProfileImage() }
 
 
 
@@ -199,7 +212,8 @@ class ProfileActivity : AppCompatActivity(), ChangePasswordDialogFragment.Notice
                 profileImage.setImageResource(R.drawable.ic_user)
             } else {
                 try {
-                    Glide.with(this).load(it.value).into(profileImage)
+                    Picasso.get().load(it.value.toString()).fit().centerCrop().into(profileImage)
+//                    Glide.with(this).load(it.value).into(profileImage)
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }

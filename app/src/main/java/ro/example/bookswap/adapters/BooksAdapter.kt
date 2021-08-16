@@ -127,7 +127,7 @@ class BooksAdapter(
                 intent.putExtra("language", "undefined")
             }
             intent.putExtra("id", items[position].id)
-
+            intent.putExtra("personal", "false")
             context.startActivity(intent, bundle)
 
         }

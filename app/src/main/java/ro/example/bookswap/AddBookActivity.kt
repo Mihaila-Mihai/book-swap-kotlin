@@ -40,6 +40,10 @@ class AddBookActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_book)
 
+
+        toolbar_add_book.setNavigationOnClickListener { finish() }
+        toolbar_add_book.title = "Results"
+
         val searchString = intent.getStringExtra("searchString")
         val newSearchString = "intitle:" + getSearchString(searchString)
         beginSearch(newSearchString)

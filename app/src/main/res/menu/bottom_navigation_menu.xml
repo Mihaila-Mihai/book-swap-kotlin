@@ -8,7 +8,7 @@
     <item
         android:id="@+id/page_2"
         android:enabled="true"
-        android:icon="@drawable/ic_like"
+        android:icon="@drawable/ic_notification"
         android:title="@string/notifications"/>
     <item
         android:id="@+id/page_3"

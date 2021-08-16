@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:maxWidth="300dp"
-            android:text="Mihaila Mihai"
+            android:text="@string/username"
             android:textSize="14sp"
             android:textColor="@color/white"
             android:paddingStart="10dp"
@@ -46,7 +46,7 @@
     <ImageView
         android:id="@+id/thumbnail_image_swipe_view"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
+        android:layout_height="600dp"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
         app:layout_constraintBottom_toBottomOf="parent"

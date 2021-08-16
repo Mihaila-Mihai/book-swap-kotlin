@@ -7,9 +7,29 @@
     android:background="@color/black"
     tools:context=".BookVisualisationActivity">
 
+
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/layout_book_vis"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar_book_vis"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:titleTextColor="@color/black"
+                android:background="@color/orange"
+                style="@style/Widget.MaterialComponents.Toolbar.Primary"
+                app:navigationIcon="@drawable/ic_left_arrow"/>
+
+        </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/alt_container"
@@ -17,7 +37,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/layout_book_vis">
 
             <ImageView
                 android:id="@+id/background"
@@ -360,6 +380,40 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/edit_content_button"
                 app:layout_constraintTop_toTopOf="@id/edit_content_button" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/update_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="30dp"
+                android:background="@drawable/custom_btn"
+                android:paddingStart="70dp"
+                android:paddingEnd="70dp"
+                android:text="Update"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="@id/edit_content_button"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/edit_content_button"
+                app:layout_constraintTop_toTopOf="@id/edit_content_button" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/like_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                android:background="@drawable/custom_btn"
+                android:paddingStart="70dp"
+                android:paddingEnd="70dp"
+                android:text="Like"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                app:layout_constraintTop_toBottomOf="@+id/image_slider"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

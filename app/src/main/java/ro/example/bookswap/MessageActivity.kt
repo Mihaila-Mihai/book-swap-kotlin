@@ -15,6 +15,8 @@ import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_message.*
 import ro.example.bookswap.adapters.MessageAdapter
+import ro.example.bookswap.models.Like
+import ro.example.bookswap.models.Match
 import ro.example.bookswap.models.Message
 import ro.example.bookswap.models.User
 
@@ -40,13 +42,42 @@ class MessageActivity : AppCompatActivity() {
         toolbar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.unmatch -> {
-                    Toast.makeText(this, "Unmatch :(", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(this, "Unmatch :(", Toast.LENGTH_SHORT).show()
                     // TODO - implement unmatch functionality
+
+                    Firebase.database.reference.child("matches").get().addOnSuccessListener {
+                        for (el in it.children) {
+                                val match = el.getValue<Match>()
+                                if ((match?.userId1 == currentUser && match?.userId2 == userId) || (match?.userId1 == userId && match.userId2 == currentUser)) {
+                                    Firebase.database.reference.child("matches").child(el.key!!).removeValue().addOnSuccessListener {
+                                        Firebase.database.reference.child("likes").child(userId).get().addOnSuccessListener { snapshotLikes ->
+                                                for (elem in snapshotLikes.children) {
+                                                    val like = elem.getValue<Like>()
+                                                    if (like?.userId == currentUser) {
+                                                        Firebase.database.reference.child("likes").child(userId).child(elem.key!!).removeValue()
+                                                    }
+                                                }
+                                        }
+
+                                        Firebase.database.reference.child("likes").child(currentUser!!).get().addOnSuccessListener { snapshotLike ->
+                                                for (elem in snapshotLike.children) {
+                                                    val like = elem.getValue<Like>()
+                                                    if (like?.userId == userId) {
+                                                        Firebase.database.reference.child("likes").child(currentUser).child(elem.key!!).removeValue()
+                                                    }
+                                                }
+                                        }
+
+                                        finish()
+                                    }
+                                }
+                            }
+                    }
+
                     true
                 }
                 R.id.swap -> {
 //                    Toast.makeText(this, "swap", Toast.LENGTH_SHORT).show()
-                    // TODO - implement swap functionality
                     val intent = Intent(this, SwapActivity::class.java)
                     intent.putExtra("userId", userId)
                     startActivity(intent)

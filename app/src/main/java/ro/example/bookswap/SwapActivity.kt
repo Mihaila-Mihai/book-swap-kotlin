@@ -105,7 +105,11 @@ class SwapActivity : AppCompatActivity() {
                 user_books.apply {
                     layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
                     val snapHelper = LinearSnapHelper()
-                    snapHelper.attachToRecyclerView(user_books)
+                    try {
+                        snapHelper.attachToRecyclerView(user_books)
+                    } catch (e: Exception) {
+                        Log.d("SwapActivity:", "snapHelper", e)
+                    }
                     bookAdapter = SwapBooksAdapter(myLikes, this@SwapActivity, "user_books")
                     adapter = bookAdapter
                 }
@@ -134,7 +138,11 @@ class SwapActivity : AppCompatActivity() {
                 my_books.apply {
                     layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
                     val snapHelper = LinearSnapHelper()
-                    snapHelper.attachToRecyclerView(my_books)
+                    try {
+                        snapHelper.attachToRecyclerView(my_books)
+                    } catch (e: Exception) {
+                        Log.e("SwapActivity:", "snapHelper", e)
+                    }
                     bookAdapter = SwapBooksAdapter(likes, this@SwapActivity, "my_books")
                     adapter = bookAdapter
                 }

@@ -8,13 +8,32 @@
     android:background="@color/white"
     tools:context=".AddBookActivity">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/layout_add_book"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar_add_book"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:titleTextColor="@color/black"
+            android:background="@color/orange"
+            style="@style/Widget.MaterialComponents.Toolbar.Primary"
+            app:navigationIcon="@drawable/ic_left_arrow"/>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layout_add_book"
+        app:layout_constraintBottom_toBottomOf="parent"
         />
 
 

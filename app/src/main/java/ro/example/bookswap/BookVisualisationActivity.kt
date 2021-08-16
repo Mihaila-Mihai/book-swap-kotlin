@@ -12,16 +12,18 @@ import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.denzcoskun.imageslider.interfaces.ItemClickListener
 import com.denzcoskun.imageslider.models.SlideModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
@@ -30,7 +32,6 @@ import com.squareup.picasso.Target
 import kotlinx.android.synthetic.main.activity_book_visualisation.*
 import kotlinx.android.synthetic.main.activity_sign_in.view.*
 import ro.example.bookswap.models.Book
-import ro.example.bookswap.models.RequestModel
 import java.io.ByteArrayOutputStream
 import java.lang.Exception
 
@@ -41,19 +42,21 @@ class BookVisualisationActivity : AppCompatActivity() {
 
     private var plusClicked: Int = 0
 
-    private lateinit var img: String
-    private lateinit var title: String
-    private lateinit var authors: String
-    private lateinit var description: String
-    private lateinit var pageCount: String
-    private lateinit var language: String
-    private lateinit var bookId: String
+    private var img: String? = null
+    private var title: String? = null
+    private var authors: String? = null
+    private var description: String? = null
+    private var pageCount: String? = null
+    private var language: String? = null
+    private var bookId: String? = null
 
     private lateinit var titleView: EditText
     private lateinit var authorsView: EditText
     private lateinit var descriptionView: EditText
     private lateinit var pageCountView: EditText
     private lateinit var languageView: EditText
+
+    private var personal: String? = null
 
     private var uriArrayList: java.util.ArrayList<String>? = null
 
@@ -65,21 +68,57 @@ class BookVisualisationActivity : AppCompatActivity() {
     private val database: DatabaseReference = Firebase.database.reference
     private val currentUser = Firebase.auth.currentUser?.uid
 
+    private lateinit var book: Book
+    private var images: MutableList<String> = ArrayList()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_book_visualisation)
 
-        img = intent.getStringExtra("thumbnail")!!
-        title = intent.getStringExtra("title")!!
-        authors = intent.getStringExtra("authors")!!
-        description = intent.getStringExtra("description")!!
-        pageCount = intent.getStringExtra("pageCount")!!
-        language = intent.getStringExtra("language")!!
-        bookId = intent.getStringExtra("id")!!
+        toolbar_book_vis.setNavigationOnClickListener { finish() }
+        toolbar_book_vis.title = "Book"
+
+        titleView = findViewById(R.id.title_of_the_book)
+        authorsView = findViewById(R.id.authors)
+        descriptionView = findViewById(R.id.description)
+        pageCountView = findViewById(R.id.page_count_text)
+        languageView = findViewById(R.id.language_text)
+
+        img = intent.getStringExtra("thumbnail")
+        title = intent.getStringExtra("title")
+        authors = intent.getStringExtra("authors")
+        description = intent.getStringExtra("description")
+        pageCount = intent.getStringExtra("pageCount")
+        language = intent.getStringExtra("language")
+        bookId = intent.getStringExtra("id")
+
+        personal = intent.getStringExtra("personal")
+
+        if (personal == "false") {
+            like_button.visibility = View.INVISIBLE
+            update_button.visibility = View.INVISIBLE
+            initialisePage()
+        } else if (personal == "true") {
+            like_button.visibility = View.INVISIBLE
+            add_book_button_visual.visibility = View.INVISIBLE
+            initialisePersonal(bookId!!)
+        } else if (personal == "notPersonal") {
+            add_book_button_visual.visibility = View.INVISIBLE
+            edit_content_button.visibility = View.INVISIBLE
+            update_button.visibility = View.INVISIBLE
+            initialisePersonal(bookId!!)
+        } else if (personal == "discover") {
+            like_button.visibility = View.INVISIBLE
+            add_book_button_visual.visibility = View.INVISIBLE
+            edit_content_button.visibility = View.INVISIBLE
+            update_button.visibility = View.INVISIBLE
+            initialisePersonal(bookId!!)
+        }
 
 
-        initialisePage()
         setTexts()
+
+        update_button.setOnClickListener { updateBook() }
 
         add_book_button_visual.setOnClickListener { addBookToDatabase() }
 
@@ -90,12 +129,14 @@ class BookVisualisationActivity : AppCompatActivity() {
                 setTextViews(View.INVISIBLE)
                 setEditTexts(View.VISIBLE)
                 add_book_button_visual.alpha = 0.5F
+                update_button.alpha = 0.5F
                 edit_content_button.setImageResource(R.drawable.ic_save)
             } else {
                 setTextViews(View.VISIBLE)
                 setEditTexts(View.INVISIBLE)
                 setTexts()
                 add_book_button_visual.alpha = 1F
+                update_button.alpha = 1F
                 edit_content_button.setImageResource(R.drawable.ic_edit_2)
             }
             editClicked++
@@ -104,10 +145,102 @@ class BookVisualisationActivity : AppCompatActivity() {
 
     }
 
+    private fun updateBook() {
+        if (update_button.alpha == 1F) {
+            book.title = titleView.text.toString()
+            book.authors = authorsView.text.toString()
+            book.pageCount = pageCountView.text.toString()
+            book.language = languageView.text.toString()
+            book.description = descriptionView.text.toString()
+
+            var uriArray = ""
+            if (images.isNotEmpty()!!) {
+
+                for (uri in images) {
+                    uriArray += "$uri,"
+                }
+                book.imageSliderUris = uriArray
+            }
+
+            val postValues = book.toMap()
+
+            Firebase.database.reference.child("books").child(book.id).updateChildren(postValues)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Updated", Toast.LENGTH_SHORT).show()
+                }
+        }
+    }
+
+    private fun initialisePersonal(bookId: String) {
+        Firebase.database.reference.child("books").child(bookId)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    book = snapshot.getValue<Book>()!!
+                    if (book.thumbnail.isNotEmpty()) {
+                        val imgArray: List<String> = book.thumbnail.split(":")!!
+                        val newImgUri = "https:" + imgArray[1]
+                        Picasso.get().load(newImgUri).fit().centerCrop().into(thumbnail)
+                        Picasso.get().load(newImgUri).into(object : Target {
+                            override fun onBitmapLoaded(
+                                bitmap: Bitmap?,
+                                from: Picasso.LoadedFrom?
+                            ) {
+                                alt_container.background =
+                                    BitmapDrawable(this@BookVisualisationActivity.resources, bitmap)
+                                alt_container.background.alpha = 120
+                            }
+
+                            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+
+                            }
+
+                            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+
+                            }
+
+                        })
+
+                    } else {
+                        thumbnail.setImageResource(R.mipmap.ic_launcher)
+                    }
+//                    Toast.makeText(this@BookVisualisationActivity, book.title, Toast.LENGTH_SHORT).show()
+                    titleView.setText(book.title)
+                    authorsView.setText(book.authors)
+                    pageCountView.setText(book.pageCount)
+                    languageView.setText(book.language)
+                    descriptionView.setText(book.description)
+                    setTexts()
+                    val imageList = book.imageSliderUris.split(",")
+                    for (el in imageList) {
+                        if (el.isNotEmpty()) {
+                            this@BookVisualisationActivity.imageList.add(SlideModel(el))
+                            images.add(el)
+                        }
+                    }
+
+                    image_slider.setImageList(this@BookVisualisationActivity.imageList)
+
+                    image_slider.setItemClickListener(object : ItemClickListener {
+                        override fun onItemSelected(position: Int) {
+                            this@BookVisualisationActivity.imageList.removeAt(position)
+                            image_slider.setImageList(this@BookVisualisationActivity.imageList)
+                        }
+                    })
+
+
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+
+            })
+    }
+
     private fun addBookToDatabase() {
         if (add_book_button_visual.alpha == 1F) {
             var uriArray = ""
-            if (plusClicked > 0) {
+            if (plusClicked > 0 && uriArrayList!!.isNotEmpty()) {
                 for (uri in uriArrayList!!) {
                     uriArray += "$uri,"
                 }
@@ -117,7 +250,7 @@ class BookVisualisationActivity : AppCompatActivity() {
                 title = title_of_the_book_text_view.text.toString(),
                 authors = authors_text_view.text.toString(),
                 id = id,
-                thumbnail = img,
+                thumbnail = img!!,
                 description = description_text_view.text.toString(),
                 pageCount = page_count_text_view.text.toString(),
                 language = language_text_view.text.toString(),
@@ -195,7 +328,10 @@ class BookVisualisationActivity : AppCompatActivity() {
 
                 for (el in uriArrayList!!) {
                     imageList.add(SlideModel(el))
-                    Log.d("Uri", el.toString())
+                    if (personal == "true") {
+                        images.add(el)
+                    }
+                    Log.d("Uri", el)
                 }
                 image_slider.setImageList(imageList)
 
@@ -258,16 +394,11 @@ class BookVisualisationActivity : AppCompatActivity() {
     }
 
     private fun initialisePage() {
-        titleView = findViewById(R.id.title_of_the_book)
-        authorsView = findViewById(R.id.authors)
-        descriptionView = findViewById(R.id.description)
-        pageCountView = findViewById(R.id.page_count_text)
-        languageView = findViewById(R.id.language_text)
 
 
         titleView.setText(title)
         if (img != "default") {
-            val imgArray: List<String> = img.split(":")
+            val imgArray: List<String> = img?.split(":")!!
             val newImgUri = "https:" + imgArray[1]
             Picasso.get().load(newImgUri).into(thumbnail)
             Picasso.get().load(newImgUri).into(object : Target {
@@ -324,7 +455,7 @@ class BookVisualisationActivity : AppCompatActivity() {
         }
 
         if (language != null && language != "undefined") {
-            languageView.setText(language.uppercase())
+            languageView.setText(language?.uppercase())
         } else {
             languageView.setText(resources.getString(R.string.language_not_found))
         }
