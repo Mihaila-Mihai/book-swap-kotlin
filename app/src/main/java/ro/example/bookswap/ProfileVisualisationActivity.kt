@@ -1,17 +1,16 @@
 package ro.example.bookswap
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.activity_book_visualisation.*
 import kotlinx.android.synthetic.main.activity_profile_visualisation.*
 import ro.example.bookswap.adapters.PersonalBooksAdapter
 import ro.example.bookswap.decoration.TopSpacingItemDecoration
@@ -21,8 +20,6 @@ import ro.example.bookswap.models.User
 class ProfileVisualisationActivity : AppCompatActivity() {
 
     private lateinit var user: User
-    private val ref: DatabaseReference = Firebase.database.reference
-    private val currentUser: String = Firebase.auth.currentUser?.uid!!
     private lateinit var bookAdapter: PersonalBooksAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,10 +33,9 @@ class ProfileVisualisationActivity : AppCompatActivity() {
 
         fillUserUI(userId)
 
-
     }
 
-    private fun fillUserBooksUI(userId: String?) {
+    private fun fillUserBooksUI() {
         val books: ArrayList<Book> = ArrayList()
         Firebase.database.reference.child("books").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -73,7 +69,7 @@ class ProfileVisualisationActivity : AppCompatActivity() {
                 user = snapshot.getValue<User>()!!
                 Picasso.get().load(user.imageUrl).fit().centerCrop().into(user_image_like_view)
                 username_like_view.text = user.username
-                fillUserBooksUI(userId)
+                fillUserBooksUI()
             }
 
             override fun onCancelled(error: DatabaseError) {

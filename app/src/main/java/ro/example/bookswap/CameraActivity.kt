@@ -164,6 +164,7 @@ class CameraActivity : AppCompatActivity() {
                 Toast.makeText(context, it.text, Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, AddBookActivity::class.java)
                 intent.putExtra("searchString", it.text)
+                intent.putExtra("from", "camera")
                 startActivity(intent)
                 finish()
 

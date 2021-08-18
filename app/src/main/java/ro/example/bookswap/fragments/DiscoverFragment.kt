@@ -19,6 +19,7 @@ import com.yuyakaido.android.cardstackview.*
 import ro.example.bookswap.R
 import ro.example.bookswap.adapters.CardStackAdapter
 import ro.example.bookswap.models.Book
+import ro.example.bookswap.models.Like
 
 class DiscoverFragment : Fragment() {
 
@@ -39,6 +40,7 @@ class DiscoverFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_discover, container, false)
 
         val books: ArrayList<Book> = ArrayList()
+
 
         val swipeView: CardStackView = view.findViewById(R.id.card_stack)
 
@@ -88,32 +90,56 @@ class DiscoverFragment : Fragment() {
         database = Firebase.database.reference
         val currentUser = Firebase.auth.currentUser?.uid!!
         database.child("books").get().addOnSuccessListener {
+            books.clear()
             for (bookElement in it.children) {
                 Log.d("firebase", "Got value ${bookElement.value}")
                 val book = bookElement.getValue<Book>()
                 if (book?.owner != currentUser) {
-                    books.add(book!!)
+                    Log.d("---------", "-----------------------")
+
+                    val result = Firebase.database.reference.child("likes").child(book?.owner!!).get().addOnSuccessListener { res ->
+                        for (el in res.children) {
+                            val like: Like? = el.getValue<Like>()
+                            Log.d("----------", "${book?.id}, ${like?.bookId}, ${like?.userId}, $currentUser")
+                            if (!(like?.bookId == book?.id && like?.userId == currentUser)) {
+                                if (!books.contains(book)) {
+                                    books.add(book!!)
+                                }
+                            }
+
+                        }
+
+                        Log.d("Exists", res.exists().toString())
+
+                        if (!res.exists()) {
+                            if (!books.contains(book)) {
+                                books.add(book!!)
+                            }
+                        }
+
+                        size = books.size
+                        Log.d("Books", books.toString())
+
+                        manager.setStackFrom(StackFrom.None)
+                        manager.setVisibleCount(2)
+                        manager.setTranslationInterval(8.0F)
+                        manager.setScaleInterval(0.95F)
+                        manager.setSwipeThreshold(0.3F)
+                        manager.setMaxDegree(20.0F)
+                        manager.setDirections(Direction.HORIZONTAL)
+                        manager.setCanScrollHorizontal(true)
+                        manager.setSwipeableMethod(SwipeableMethod.Manual)
+                        manager.setOverlayInterpolator(LinearInterpolator())
+
+                        adapter = CardStackAdapter(books, view.context)
+                        swipeView.layoutManager = manager
+                        swipeView.adapter = adapter
+                        swipeView.itemAnimator = DefaultItemAnimator()
+                    }
                 }
             }
 
-            size = books.size
-            Log.d("Books", books.toString())
 
-            manager.setStackFrom(StackFrom.None)
-            manager.setVisibleCount(2)
-            manager.setTranslationInterval(8.0F)
-            manager.setScaleInterval(0.95F)
-            manager.setSwipeThreshold(0.3F)
-            manager.setMaxDegree(20.0F)
-            manager.setDirections(Direction.HORIZONTAL)
-            manager.setCanScrollHorizontal(true)
-            manager.setSwipeableMethod(SwipeableMethod.Manual)
-            manager.setOverlayInterpolator(LinearInterpolator())
-
-            adapter = CardStackAdapter(books, view.context)
-            swipeView.layoutManager = manager
-            swipeView.adapter = adapter
-            swipeView.itemAnimator = DefaultItemAnimator()
 
         }
 

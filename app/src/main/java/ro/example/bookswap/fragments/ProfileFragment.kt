@@ -12,6 +12,7 @@ import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -21,11 +22,10 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import de.hdodenhof.circleimageview.CircleImageView
+import kotlinx.android.synthetic.main.add_book_methods_dialog.*
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.fragment_profile.view.*
-import ro.example.bookswap.CameraActivity
-import ro.example.bookswap.ProfileActivity
-import ro.example.bookswap.R
+import ro.example.bookswap.*
 import ro.example.bookswap.adapters.PersonalBooksAdapter
 import ro.example.bookswap.decoration.TopSpacingItemDecoration
 import ro.example.bookswap.models.Book
@@ -68,9 +68,49 @@ class ProfileFragment : Fragment() {
         }
         view.findViewById<AppCompatImageButton>(R.id.add_book_button).setOnClickListener {
 //            val intent = Intent(context, AddBookActivity::class.java)
-            val intent = Intent(context, CameraActivity::class.java)
-            intent.putExtra("activity", "profileFragment")
-            startActivity(intent)
+
+            val dialog = MaterialAlertDialogBuilder(requireContext())
+            dialog.setView(R.layout.add_book_methods_dialog)
+            val dialogCreated = dialog.create()
+            dialogCreated.show()
+
+
+            dialogCreated.manual_input.setOnClickListener {
+                dialogCreated.dismiss()
+                val intent = Intent(context, BookVisualisationActivity::class.java)
+                intent.putExtra("personal", "fromProfile")
+                startActivity(intent)
+            }
+
+            dialogCreated.title_search.setOnClickListener {
+                dialogCreated.manual_input.visibility = View.GONE
+                dialogCreated.manual_text.visibility = View.GONE
+                dialogCreated.title_search.visibility = View.GONE
+                dialogCreated.search_text.visibility = View.GONE
+                dialogCreated.photo.visibility = View.GONE
+                dialogCreated.photo_text.visibility = View.GONE
+
+                dialogCreated.outlinedTextField.visibility = View.VISIBLE
+                dialogCreated.search_button.visibility = View.VISIBLE
+            }
+
+            dialogCreated.search_button.setOnClickListener {
+                dialogCreated.dismiss()
+                if (dialogCreated.input_content.text!!.isNotEmpty()) {
+                    val intent = Intent(context, AddBookActivity::class.java)
+                    intent.putExtra("searchString", dialogCreated.input_content.text.toString())
+                    intent.putExtra("from", "title")
+                    startActivity(intent)
+                }
+            }
+
+            dialogCreated.photo.setOnClickListener {
+                dialogCreated.dismiss()
+                val intent = Intent(context, CameraActivity::class.java)
+                intent.putExtra("activity", "profileFragment")
+                startActivity(intent)
+            }
+
         }
 
 
@@ -108,6 +148,11 @@ class ProfileFragment : Fragment() {
 
         })
 
+
+        view.history_button.setOnClickListener {
+            val intent = Intent(context, HistoryActivity::class.java)
+            startActivity(intent)
+        }
 
         return view
     }
