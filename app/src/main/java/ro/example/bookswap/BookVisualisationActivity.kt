@@ -32,8 +32,8 @@ import com.squareup.picasso.Target
 import kotlinx.android.synthetic.main.activity_book_visualisation.*
 import kotlinx.android.synthetic.main.activity_sign_in.view.*
 import ro.example.bookswap.models.Book
+import ro.example.bookswap.models.Like
 import java.io.ByteArrayOutputStream
-import java.lang.Exception
 
 
 class BookVisualisationActivity : AppCompatActivity() {
@@ -94,27 +94,38 @@ class BookVisualisationActivity : AppCompatActivity() {
 
         personal = intent.getStringExtra("personal")
 
-        if (personal == "false") {
-            like_button.visibility = View.INVISIBLE
-            update_button.visibility = View.INVISIBLE
-            initialisePage()
-        } else if (personal == "true") {
-            like_button.visibility = View.INVISIBLE
-            add_book_button_visual.visibility = View.INVISIBLE
-            initialisePersonal(bookId!!)
-        } else if (personal == "notPersonal") {
-            add_book_button_visual.visibility = View.INVISIBLE
-            edit_content_button.visibility = View.INVISIBLE
-            update_button.visibility = View.INVISIBLE
-            initialisePersonal(bookId!!)
-        } else if (personal == "discover") {
-            like_button.visibility = View.INVISIBLE
-            add_book_button_visual.visibility = View.INVISIBLE
-            edit_content_button.visibility = View.INVISIBLE
-            update_button.visibility = View.INVISIBLE
-            initialisePersonal(bookId!!)
+        when (personal) {
+            "false" -> {
+                like_button.visibility = View.INVISIBLE
+                update_button.visibility = View.INVISIBLE
+                add_photo_button.visibility = View.INVISIBLE
+                initialisePage()
+            }
+            "true" -> {
+                like_button.visibility = View.INVISIBLE
+                add_book_button_visual.visibility = View.INVISIBLE
+                initialisePersonal(bookId!!)
+            }
+            "notPersonal" -> {
+                add_book_button_visual.visibility = View.INVISIBLE
+                edit_content_button.visibility = View.INVISIBLE
+                update_button.visibility = View.INVISIBLE
+                add_photo_button.visibility = View.INVISIBLE
+                initialisePersonal(bookId!!)
+            }
+            "discover" -> {
+                like_button.visibility = View.INVISIBLE
+                add_book_button_visual.visibility = View.INVISIBLE
+                edit_content_button.visibility = View.INVISIBLE
+                update_button.visibility = View.INVISIBLE
+                add_photo_button.visibility = View.INVISIBLE
+                initialisePersonal(bookId!!)
+            }
+            "fromProfile" -> {
+                like_button.visibility = View.INVISIBLE
+                update_button.visibility = View.INVISIBLE
+            }
         }
-
 
         setTexts()
 
@@ -123,6 +134,8 @@ class BookVisualisationActivity : AppCompatActivity() {
         add_book_button_visual.setOnClickListener { addBookToDatabase() }
 
         add_photo_button.setOnClickListener { addBookDialog() }
+
+        like_button.setOnClickListener { likeBook() }
 
         edit_content_button.setOnClickListener {
             if (editClicked % 2 == 1) {
@@ -145,6 +158,40 @@ class BookVisualisationActivity : AppCompatActivity() {
 
     }
 
+    private fun likeBook() {
+        Firebase.database.reference.child("likes").child(book.owner).get().addOnSuccessListener {
+
+            for (el in it.children) {
+                val like: Like? = el.getValue<Like>()
+                if (!(like?.bookId == bookId && like?.userId == currentUser)) {
+                    Log.d("LikeBookProfile", "true----------")
+                    Firebase.database.reference.child("books").child(bookId!!).get()
+                        .addOnSuccessListener { res ->
+                            val book: Book? = res.getValue<Book>()
+                            val newLike = Like(bookId = bookId!!, userId = currentUser!!)
+                            Firebase.database.reference.child("likes").child(book?.owner!!).push()
+                                .setValue(newLike).addOnSuccessListener {
+                                    like_button.alpha = 0.5F
+                                }
+                        }
+                } else {
+                    like_button.alpha = 0.5F
+                }
+            }
+
+            if (!it.exists()) {
+                val newLike = Like(bookId = bookId!!, userId = currentUser!!)
+                Firebase.database.reference.child("likes").child(book.owner).push()
+                    .setValue(newLike).addOnSuccessListener {
+                    like_button.alpha = 0.5F
+                }
+            }
+
+        }
+
+
+    }
+
     private fun updateBook() {
         if (update_button.alpha == 1F) {
             book.title = titleView.text.toString()
@@ -154,7 +201,7 @@ class BookVisualisationActivity : AppCompatActivity() {
             book.description = descriptionView.text.toString()
 
             var uriArray = ""
-            if (images.isNotEmpty()!!) {
+            if (images.isNotEmpty()) {
 
                 for (uri in images) {
                     uriArray += "$uri,"
@@ -176,8 +223,20 @@ class BookVisualisationActivity : AppCompatActivity() {
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     book = snapshot.getValue<Book>()!!
+
+                    Firebase.database.reference.child("likes").child(book.owner).get()
+                        .addOnSuccessListener {
+
+                            for (el in it.children) {
+                                val like: Like? = el.getValue<Like>()
+                                if (like?.bookId == bookId && like.userId == currentUser) {
+                                    like_button.alpha = 0.5F
+                                }
+                            }
+                        }
+
                     if (book.thumbnail.isNotEmpty()) {
-                        val imgArray: List<String> = book.thumbnail.split(":")!!
+                        val imgArray: List<String> = book.thumbnail.split(":")
                         val newImgUri = "https:" + imgArray[1]
                         Picasso.get().load(newImgUri).fit().centerCrop().into(thumbnail)
                         Picasso.get().load(newImgUri).into(object : Target {
@@ -246,17 +305,32 @@ class BookVisualisationActivity : AppCompatActivity() {
                 }
             }
             val id = (System.currentTimeMillis() / 1000 + (1..100000).random()).toString()
-            val newBook = Book(
-                title = title_of_the_book_text_view.text.toString(),
-                authors = authors_text_view.text.toString(),
-                id = id,
-                thumbnail = img!!,
-                description = description_text_view.text.toString(),
-                pageCount = page_count_text_view.text.toString(),
-                language = language_text_view.text.toString(),
-                owner = currentUser!!,
-                imageSliderUris = uriArray
-            )
+            val newBook: Book
+            if (personal == "fromProfile") {
+                newBook = Book(
+                    title = title_of_the_book_text_view.text.toString(),
+                    authors = authors_text_view.text.toString(),
+                    id = id,
+                    description = description_text_view.text.toString(),
+                    pageCount = page_count_text_view.text.toString(),
+                    language = language_text_view.text.toString(),
+                    owner = currentUser!!,
+                    imageSliderUris = uriArray
+                )
+            } else {
+                newBook = Book(
+                    title = title_of_the_book_text_view.text.toString(),
+                    authors = authors_text_view.text.toString(),
+                    id = id,
+                    thumbnail = img!!,
+                    description = description_text_view.text.toString(),
+                    pageCount = page_count_text_view.text.toString(),
+                    language = language_text_view.text.toString(),
+                    owner = currentUser!!,
+                    imageSliderUris = uriArray
+                )
+            }
+
 
             val bookReference = database.child("books").child(id).setValue(newBook)
             bookReference.addOnSuccessListener {
@@ -368,7 +442,7 @@ class BookVisualisationActivity : AppCompatActivity() {
 
         val uploadTask = imageRef?.putBytes(data)
 
-        val urlTask = uploadTask?.continueWithTask { task ->
+        uploadTask?.continueWithTask { task ->
             if (!task.isSuccessful) {
                 task.exception?.let {
                     throw it

@@ -3,6 +3,7 @@ package ro.example.bookswap.adapters
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +20,7 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_sign_in.view.*
+import ro.example.bookswap.BookVisualisationActivity
 import ro.example.bookswap.R
 import ro.example.bookswap.enums.Status
 import ro.example.bookswap.models.Book
@@ -78,7 +80,8 @@ class SwapsAdapter(
             loadImage(book, holder)
         }
 
-        if (swap.receiver != currentUser) {
+
+        if (swap.receiver != currentUser || swap.status != Status.IN_PROGRESS) {
             holder.acceptButton.visibility = View.GONE
             holder.declineButton.visibility = View.GONE
         }
@@ -151,6 +154,17 @@ class SwapsAdapter(
 
                                                     }
                                                 }
+
+                                                // Make a copy of the book
+
+//                                                Firebase.database.reference.child("books").child(swap.receiverBook).get().addOnSuccessListener {
+//                                                    val book: Book? = it.getValue<Book>()
+//                                                    book?.owner = swap.sender
+//                                                    val id = (System.currentTimeMillis() / 1000 + (1..100000).random()).toString()
+//                                                    Firebase.database.reference.child("history").child(id)
+//
+//                                                }
+
 
                                             }
                                     }

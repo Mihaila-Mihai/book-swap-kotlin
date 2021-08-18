@@ -57,9 +57,14 @@ class CardStackAdapter(
         viewHolder = holder
         holder.titleView.text = items[position].title
         holder.authorsView.text = items[position].authors
-        val imgArray: List<String> = items[position].thumbnail.split(":")
-        val newImgUri = "https:" + imgArray[1]
-        Picasso.get().load(newImgUri).fit().centerCrop().into(holder.thumbnailImage)
+        try {
+            val imgArray: List<String> = items[position].thumbnail.split(":")
+            val newImgUri = "https:" + imgArray[1]
+            Picasso.get().load(newImgUri).fit().centerCrop().into(holder.thumbnailImage)
+        } catch (e: Exception) {
+            Picasso.get().load(R.mipmap.ic_launcher).into(holder.thumbnailImage)
+        }
+
 
         val userReference = reference.child("users").child(items[position].owner)
 

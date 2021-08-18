@@ -28,7 +28,7 @@
         app:layout_constraintTop_toBottomOf="@id/text1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/media"
-        android:src="@drawable/ic_history"
+        android:src="@drawable/ic_camera"
         android:contentDescription="Take new Photo" />
 
     <ImageButton

@@ -39,6 +39,17 @@ class MessageActivity : AppCompatActivity() {
 
         send_button.setOnClickListener { sendMessage() }
 
+        profile_image_message.setOnClickListener {
+            val intent = Intent(this, ProfileVisualisationActivity::class.java)
+            intent.putExtra("userId", userId)
+            startActivity(intent)
+        }
+        username.setOnClickListener {
+            val intent = Intent(this, ProfileVisualisationActivity::class.java)
+            intent.putExtra("userId", userId)
+            startActivity(intent)
+        }
+
         toolbar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.unmatch -> {

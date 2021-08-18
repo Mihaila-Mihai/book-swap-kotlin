@@ -19,6 +19,7 @@ import kotlinx.android.synthetic.main.activity_add_book.*
 import ro.example.bookswap.adapters.BooksAdapter
 import ro.example.bookswap.decoration.TopSpacingItemDecoration
 import ro.example.bookswap.interfaces.GoogleBooksApiService
+import ro.example.bookswap.models.RequestModel
 import java.io.FileInputStream
 import java.util.*
 import kotlin.collections.ArrayList
@@ -45,8 +46,14 @@ class AddBookActivity : AppCompatActivity() {
         toolbar_add_book.title = "Results"
 
         val searchString = intent.getStringExtra("searchString")
-        val newSearchString = "intitle:" + getSearchString(searchString)
-        beginSearch(newSearchString)
+        val from = intent.getStringExtra("from")
+
+        if (from == "camera") {
+            val newSearchString = "intitle:" + getSearchString(searchString)
+            beginSearch(newSearchString)
+        } else {
+            beginSearch(searchString!!)
+        }
 
 
 
@@ -76,6 +83,7 @@ class AddBookActivity : AppCompatActivity() {
     }
 
     private fun beginSearch(newSearchString: String) {
+        val items: ArrayList<RequestModel.Items> = ArrayList()
         disposable = googleBooksApiService.getBooks(newSearchString, BuildConfig.apiKey)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -85,6 +93,11 @@ class AddBookActivity : AppCompatActivity() {
                         Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show()
 //                        book_title.setText(result.items[0].volumeInfo.title)
                         Log.d("Titlul Cartii", result.items[0].volumeInfo.title + result.items.size.toString())
+//                        for (item in result.items) {
+//                            if (item.volumeInfo.imageLinks.thumbnail != "") {
+//                                items.add(item)
+//                            }
+//                        }
                         recycler_view.apply {
                             layoutManager = LinearLayoutManager(this@AddBookActivity)
                             val topSpacingDecoration = TopSpacingItemDecoration(30)
