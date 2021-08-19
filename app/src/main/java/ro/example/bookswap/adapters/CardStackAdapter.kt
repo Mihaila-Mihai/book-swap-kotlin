@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
@@ -90,33 +89,37 @@ class CardStackAdapter(
         }
     }
 
-    fun onSwipe(position: Int) {
-        val likes: MutableSet<String> = HashSet()
-        var userAlreadyLikes: Boolean = false
-        Log.d("owner", owner.id)
-        val ref = Firebase.database.reference.child("likes").child(owner.id)
-        ref.get().addOnSuccessListener {
-            for (el in it.children) {
-                val like = el.getValue<Like>()
-                if (like?.bookId == items[position].id) {
-                    userAlreadyLikes = true
-                    break
+    fun onSwipe(position: Int, books: ArrayList<Book>) {
+        Firebase.database.reference.child("users").child(books[position].owner).get().addOnSuccessListener { res ->
+            val bookOwner = res.getValue<User>()!!
+            val likes: MutableSet<String> = HashSet()
+            var userAlreadyLikes: Boolean = false
+            Log.d("owner", bookOwner.id)
+            val ref = Firebase.database.reference.child("likes").child(bookOwner.id)
+            ref.get().addOnSuccessListener {
+                for (el in it.children) {
+                    val like = el.getValue<Like>()
+                    if (like?.bookId == books[position].id && like.userId == currentUser) {
+                        userAlreadyLikes = true
+                        break
+                    }
                 }
-            }
 
 
 
-            Log.d("true/false", userAlreadyLikes.toString())
-            Log.d("ref:", ref.toString())
-            if (!userAlreadyLikes) {
-                ref.push().setValue(
-                    Like(Firebase.auth.currentUser?.uid!!, items[position].id)
+                Log.d("true/false", userAlreadyLikes.toString())
+                Log.d("ref:", ref.toString())
+                if (!userAlreadyLikes || !res.exists()) {
+                    ref.push().setValue(
+                        Like(Firebase.auth.currentUser?.uid!!, books[position].id)
 //                    Firebase.auth.currentUser?.uid + "`" + items[position].title + "`" + items[position].id
-                )
-                verifyMatch(items[position].owner)
-            }
+                    )
+                    verifyMatch(books[position].owner)
+                }
 
+            }
         }
+
 
 //        likes.add(Firebase.auth.currentUser.toString())
     }

@@ -125,7 +125,7 @@ class SwapsAdapter(
                                                                     Firebase.database.reference.child(
                                                                         "swaps"
                                                                     ).child(swapToVerify.id)
-                                                                        .child("Status")
+                                                                        .child("status")
                                                                         .setValue(Status.DECLINED)
                                                                 }
                                                             }

@@ -56,8 +56,6 @@ class AddBookActivity : AppCompatActivity() {
         }
 
 
-
-
 //        add_photo_button.setOnClickListener { addBookDialog() }
 
 //        val data = arrayOf("1", "2", "3")
@@ -92,17 +90,39 @@ class AddBookActivity : AppCompatActivity() {
                     run {
                         Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show()
 //                        book_title.setText(result.items[0].volumeInfo.title)
-                        Log.d("Titlul Cartii", result.items[0].volumeInfo.title + result.items.size.toString())
+                        Log.d(
+                            "Titlul Cartii",
+                            result.items[0].volumeInfo.title + result.items.size.toString()
+                        )
+                        for (item in result.items) {
+                            if (item.volumeInfo.imageLinks != null) {
+                                if (item.volumeInfo.imageLinks.thumbnail != null) {
+                                    try {
+                                        Log.d(
+                                            "Thumbnail",
+                                            (item.volumeInfo.imageLinks != null).toString()
+                                        )
+                                        items.add(item)
+                                    } catch (e: Exception) {
+                                        Log.e("Thumbnail", "exception", e)
+                                    }
+                                }
+                            }
+
+                        }
+
 //                        for (item in result.items) {
 //                            if (item.volumeInfo.imageLinks.thumbnail != "") {
 //                                items.add(item)
 //                            }
 //                        }
                         recycler_view.apply {
+                            Log.d("Books", items.size.toString())
                             layoutManager = LinearLayoutManager(this@AddBookActivity)
                             val topSpacingDecoration = TopSpacingItemDecoration(30)
                             addItemDecoration(topSpacingDecoration)
-                            bookAdapter = BooksAdapter(result.items, this@AddBookActivity, this@AddBookActivity)
+                            bookAdapter =
+                                BooksAdapter(items, this@AddBookActivity, this@AddBookActivity)
                             adapter = bookAdapter
                         }
                     }
