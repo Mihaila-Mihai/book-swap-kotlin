@@ -60,6 +60,8 @@ class BooksAdapter(
                 .placeholder(R.mipmap.ic_launcher)
                 .error(R.drawable.error)
                 .into(holder.thumbnail)//
+        } else {
+            Picasso.get().load(R.mipmap.ic_launcher).into(holder.thumbnail)
         }
 
         if (items[position].volumeInfo.authors != null) {

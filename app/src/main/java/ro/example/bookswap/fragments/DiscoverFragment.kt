@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import com.google.firebase.auth.ktx.auth
@@ -44,7 +43,7 @@ class DiscoverFragment : Fragment() {
 
         val swipeView: CardStackView = view.findViewById(R.id.card_stack)
 
-        manager = CardStackLayoutManager(context, object: CardStackListener {
+        manager = CardStackLayoutManager(context, object : CardStackListener {
             override fun onCardDragging(direction: Direction?, ratio: Float) {
                 Log.d(TAG, "onCardDragging: d=" + direction?.name + "ratio=" + ratio)
             }
@@ -52,7 +51,7 @@ class DiscoverFragment : Fragment() {
             override fun onCardSwiped(direction: Direction?) {
                 Log.d(TAG, "onCardSwiped: p=")
                 if (direction == Direction.Right) {
-                    adapter.onSwipe(position)
+                    adapter.onSwipe(position, books)
                     position++
                 }
                 if (direction == Direction.Left) {
@@ -94,51 +93,73 @@ class DiscoverFragment : Fragment() {
             for (bookElement in it.children) {
                 Log.d("firebase", "Got value ${bookElement.value}")
                 val book = bookElement.getValue<Book>()
+                var isBookThere: Boolean = false
                 if (book?.owner != currentUser) {
-                    Log.d("---------", "-----------------------")
+                    Log.d("Book", "BookId: ${book?.id}")
 
-                    val result = Firebase.database.reference.child("likes").child(book?.owner!!).get().addOnSuccessListener { res ->
-                        for (el in res.children) {
-                            val like: Like? = el.getValue<Like>()
-                            Log.d("----------", "${book?.id}, ${like?.bookId}, ${like?.userId}, $currentUser")
-                            if (!(like?.bookId == book?.id && like?.userId == currentUser)) {
-                                if (!books.contains(book)) {
-                                    books.add(book!!)
+                    val result =
+                        Firebase.database.reference.child("likes").child(book?.owner!!).get()
+                            .addOnSuccessListener { res ->
+                                for (el in res.children) {
+                                    val like: Like? = el.getValue<Like>()
+                                    Log.d(
+                                        "----------",
+                                        "${book.id}, ${like?.bookId}, ${like?.userId}, $currentUser"
+                                    )
+
+                                    if (like?.bookId == book.id) {
+                                        if (like.userId == currentUser) {
+                                            isBookThere = true
+                                        }
+
+                                    }
+
+//                                    if (!(like?.bookId == book.id && like.userId == currentUser)) {
+//                                        Log.d("BookVerif", book.id)
+//                                        if (like?.userId != currentUser) {
+//                                            isBookThere = true
+//                                        }
+//                                        if (!isBookThere && !books.contains(book) && el.key == book.owner) {
+//                                            books.add(book)
+//                                        }
+//                                    }
+
+
                                 }
+
+                                if (!books.contains(book) && !isBookThere) {
+                                    books.add(book)
+                                }
+
+                                Log.d("Exists", res.exists().toString())
+
+                                if (!res.exists()) {
+                                    if (!books.contains(book)) {
+                                        books.add(book!!)
+                                    }
+                                }
+
+                                size = books.size
+                                Log.d("Books", books.toString())
+
+                                manager.setStackFrom(StackFrom.None)
+                                manager.setVisibleCount(2)
+                                manager.setTranslationInterval(8.0F)
+                                manager.setScaleInterval(0.95F)
+                                manager.setSwipeThreshold(0.3F)
+                                manager.setMaxDegree(20.0F)
+                                manager.setDirections(Direction.HORIZONTAL)
+                                manager.setCanScrollHorizontal(true)
+                                manager.setSwipeableMethod(SwipeableMethod.Manual)
+                                manager.setOverlayInterpolator(LinearInterpolator())
+
+                                adapter = CardStackAdapter(books, view.context)
+                                swipeView.layoutManager = manager
+                                swipeView.adapter = adapter
+                                swipeView.itemAnimator = DefaultItemAnimator()
                             }
-
-                        }
-
-                        Log.d("Exists", res.exists().toString())
-
-                        if (!res.exists()) {
-                            if (!books.contains(book)) {
-                                books.add(book!!)
-                            }
-                        }
-
-                        size = books.size
-                        Log.d("Books", books.toString())
-
-                        manager.setStackFrom(StackFrom.None)
-                        manager.setVisibleCount(2)
-                        manager.setTranslationInterval(8.0F)
-                        manager.setScaleInterval(0.95F)
-                        manager.setSwipeThreshold(0.3F)
-                        manager.setMaxDegree(20.0F)
-                        manager.setDirections(Direction.HORIZONTAL)
-                        manager.setCanScrollHorizontal(true)
-                        manager.setSwipeableMethod(SwipeableMethod.Manual)
-                        manager.setOverlayInterpolator(LinearInterpolator())
-
-                        adapter = CardStackAdapter(books, view.context)
-                        swipeView.layoutManager = manager
-                        swipeView.adapter = adapter
-                        swipeView.itemAnimator = DefaultItemAnimator()
-                    }
                 }
             }
-
 
 
         }
