@@ -47,6 +47,12 @@ dependencies {
     implementation 'com.google.firebase:firebase-database-ktx'
     implementation 'com.google.firebase:firebase-storage-ktx'
 
+    // Easypermission
+    implementation 'com.vmadalin:easypermissions-ktx:1.0.0'
+
+    //Fine Location
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
+
     // Image Cropper
     implementation 'com.github.yalantis:ucrop:2.2.6'
 
