@@ -15,9 +15,13 @@ import androidx.fragment.app.replace
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.navigation.NavigationBarView
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 import ro.example.bookswap.fragments.*
+import ro.example.bookswap.models.LocationModel
 import java.util.jar.Manifest
 
 class MainActivity : AppCompatActivity(), ExitDialogFragment.NoticeDialogListener, EasyPermissions.PermissionCallbacks {
@@ -27,6 +31,7 @@ class MainActivity : AppCompatActivity(), ExitDialogFragment.NoticeDialogListene
         const val PERMISSION_LOCATION_REQUEST_CODE = 1
     }
 
+    private val currentUser = Firebase.auth.currentUser?.uid
     private lateinit var navigationBarView: NavigationBarView
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
@@ -58,6 +63,14 @@ class MainActivity : AppCompatActivity(), ExitDialogFragment.NoticeDialogListene
             fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
                 Log.d("Location latitude", location.latitude.toString())
                 Log.d("Location longitude", location.longitude.toString())
+
+                Firebase.database.reference.child("users").child(currentUser!!).child("location").setValue(LocationModel(
+                    location.longitude.toString(),
+                    location.latitude.toString()
+                )).addOnFailureListener {
+                    Toast.makeText(this, "Location update failed", Toast.LENGTH_SHORT).show()
+                }
+
             }
         } else {
             requestLocationPermission()

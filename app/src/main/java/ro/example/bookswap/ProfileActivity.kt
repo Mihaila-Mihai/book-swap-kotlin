@@ -22,6 +22,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.slider.Slider
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
@@ -44,6 +45,7 @@ import java.io.ByteArrayOutputStream
 
 class ProfileActivity : AppCompatActivity(), ChangePasswordDialogFragment.NoticeDialogListener {
 
+    private val currentUser = Firebase.auth.currentUser?.uid
     private lateinit var user: FirebaseUser
     private lateinit var database: DatabaseReference
     private lateinit var profileImage: ImageView
@@ -101,6 +103,21 @@ class ProfileActivity : AppCompatActivity(), ChangePasswordDialogFragment.Notice
         findViewById<AppCompatImageButton>(R.id.email_address_button).setOnClickListener { changeEmailAddress() }
 //        findViewById<Button>(R.id.sign_out_button).setOnClickListener { signOut() }
         findViewById<ImageView>(R.id.profile_image_message).setOnClickListener { changeProfileImage() }
+
+        Firebase.database.reference.child("users").child(currentUser!!).get().addOnSuccessListener {
+            distance_slider.value = it.getValue<User>()?.distanceToUser?.toFloat()?.div(1000)!!
+        }
+
+        distance_slider.addOnSliderTouchListener(object: Slider.OnSliderTouchListener {
+            override fun onStartTrackingTouch(slider: Slider) {
+
+            }
+
+            override fun onStopTrackingTouch(slider: Slider) {
+                Firebase.database.reference.child("users").child(currentUser).child("distanceToUser").setValue(distance_slider.value.times(1000).toString())
+            }
+
+        })
 
 
 

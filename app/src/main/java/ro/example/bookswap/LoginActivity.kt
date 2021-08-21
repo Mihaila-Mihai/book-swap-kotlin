@@ -23,6 +23,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import ro.example.bookswap.enums.Activities
+import ro.example.bookswap.models.LocationModel
 import ro.example.bookswap.models.User
 
 class LoginActivity : AppCompatActivity() {
@@ -130,7 +131,8 @@ class LoginActivity : AppCompatActivity() {
         val currentUser = Firebase.auth.currentUser!!
         val user = currentUser.displayName?.let { currentUser.email?.let { it1 ->
             User(it, "",
-                it1, "", "Google", currentUser.photoUrl.toString(), currentUser.uid)
+                it1, "", "Google", currentUser.photoUrl.toString(), currentUser.uid, LocationModel("", "")
+            )
         } }
         database.child("users").child(userId).setValue(user).addOnCompleteListener(
             OnCompleteListener { task ->

@@ -7,8 +7,10 @@ class User(
     var description: String = "",
     var provider: String = "",
     var imageUrl: String = "",
-    var id: String = ""
+    var id: String = "",
+    val location: LocationModel,
+    val distanceToUser: String = "100000.0"
 ) {
-    constructor() : this("","","","","", "", "")
+    constructor() : this("","","","","", "", "", LocationModel("", ""))
 
 }

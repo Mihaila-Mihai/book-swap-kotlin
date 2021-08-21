@@ -1,6 +1,7 @@
 package ro.example.bookswap.fragments
 
 import android.content.ContentValues.TAG
+import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -19,6 +20,7 @@ import ro.example.bookswap.R
 import ro.example.bookswap.adapters.CardStackAdapter
 import ro.example.bookswap.models.Book
 import ro.example.bookswap.models.Like
+import ro.example.bookswap.models.User
 
 class DiscoverFragment : Fragment() {
 
@@ -95,24 +97,35 @@ class DiscoverFragment : Fragment() {
                 val book = bookElement.getValue<Book>()
                 var isBookThere: Boolean = false
                 if (book?.owner != currentUser) {
-                    Log.d("Book", "BookId: ${book?.id}")
+                    database.child("users").child(book?.owner!!).get().addOnSuccessListener { bookOwnerResult ->
+                        val bookOwner = bookOwnerResult.getValue<User>()
+                        val bookOwnerLocation: Location = Location("")
+                        bookOwnerLocation.longitude = bookOwner?.location?.longitude?.toDouble()!!
+                        bookOwnerLocation.latitude = bookOwner.location.latitude.toDouble()
+                        database.child("users").child(currentUser).get().addOnSuccessListener { currentUserResult ->
+                            val currUser = currentUserResult.getValue<User>()
+                            val currentUserLocation: Location = Location("")
+                            currentUserLocation.longitude = currUser?.location?.longitude?.toDouble()!!
+                            currentUserLocation.latitude = currUser.location.latitude.toDouble()
+                            if (currentUserLocation.distanceTo(bookOwnerLocation) < currUser.distanceToUser.toDouble()) {
+                                Log.d("Book", "BookId: ${book.id}")
 
-                    val result =
-                        Firebase.database.reference.child("likes").child(book?.owner!!).get()
-                            .addOnSuccessListener { res ->
-                                for (el in res.children) {
-                                    val like: Like? = el.getValue<Like>()
-                                    Log.d(
-                                        "----------",
-                                        "${book.id}, ${like?.bookId}, ${like?.userId}, $currentUser"
-                                    )
+                                val result =
+                                    Firebase.database.reference.child("likes").child(book.owner).get()
+                                        .addOnSuccessListener { res ->
+                                            for (el in res.children) {
+                                                val like: Like? = el.getValue<Like>()
+                                                Log.d(
+                                                    "----------",
+                                                    "${book.id}, ${like?.bookId}, ${like?.userId}, $currentUser"
+                                                )
 
-                                    if (like?.bookId == book.id) {
-                                        if (like.userId == currentUser) {
-                                            isBookThere = true
-                                        }
+                                                if (like?.bookId == book.id) {
+                                                    if (like.userId == currentUser) {
+                                                        isBookThere = true
+                                                    }
 
-                                    }
+                                                }
 
 //                                    if (!(like?.bookId == book.id && like.userId == currentUser)) {
 //                                        Log.d("BookVerif", book.id)
@@ -125,39 +138,43 @@ class DiscoverFragment : Fragment() {
 //                                    }
 
 
-                                }
+                                            }
 
-                                if (!books.contains(book) && !isBookThere) {
-                                    books.add(book)
-                                }
+                                            if (!books.contains(book) && !isBookThere) {
+                                                books.add(book)
+                                            }
 
-                                Log.d("Exists", res.exists().toString())
+                                            Log.d("Exists", res.exists().toString())
 
-                                if (!res.exists()) {
-                                    if (!books.contains(book)) {
-                                        books.add(book!!)
-                                    }
-                                }
+                                            if (!res.exists()) {
+                                                if (!books.contains(book)) {
+                                                    books.add(book)
+                                                }
+                                            }
 
-                                size = books.size
-                                Log.d("Books", books.toString())
+                                            size = books.size
+                                            Log.d("Books", books.toString())
 
-                                manager.setStackFrom(StackFrom.None)
-                                manager.setVisibleCount(2)
-                                manager.setTranslationInterval(8.0F)
-                                manager.setScaleInterval(0.95F)
-                                manager.setSwipeThreshold(0.3F)
-                                manager.setMaxDegree(20.0F)
-                                manager.setDirections(Direction.HORIZONTAL)
-                                manager.setCanScrollHorizontal(true)
-                                manager.setSwipeableMethod(SwipeableMethod.Manual)
-                                manager.setOverlayInterpolator(LinearInterpolator())
+                                            manager.setStackFrom(StackFrom.None)
+                                            manager.setVisibleCount(2)
+                                            manager.setTranslationInterval(8.0F)
+                                            manager.setScaleInterval(0.95F)
+                                            manager.setSwipeThreshold(0.3F)
+                                            manager.setMaxDegree(20.0F)
+                                            manager.setDirections(Direction.HORIZONTAL)
+                                            manager.setCanScrollHorizontal(true)
+                                            manager.setSwipeableMethod(SwipeableMethod.Manual)
+                                            manager.setOverlayInterpolator(LinearInterpolator())
 
-                                adapter = CardStackAdapter(books, view.context)
-                                swipeView.layoutManager = manager
-                                swipeView.adapter = adapter
-                                swipeView.itemAnimator = DefaultItemAnimator()
+                                            adapter = CardStackAdapter(books, view.context)
+                                            swipeView.layoutManager = manager
+                                            swipeView.adapter = adapter
+                                            swipeView.itemAnimator = DefaultItemAnimator()
+                                        }
                             }
+                        }
+                    }
+
                 }
             }
 
