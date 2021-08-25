@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -22,6 +23,7 @@ import ro.example.bookswap.models.Swap
 class HistoryActivity : AppCompatActivity() {
 
     private lateinit var swapsAdapter: HistoryAdapter
+    private val currentUser = Firebase.auth.currentUser?.uid
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,9 +39,12 @@ class HistoryActivity : AppCompatActivity() {
                 swaped.clear()
                 for (el in snapshot.children) {
                     val swap: Swap? = el.getValue<Swap>()
-                    if (swap?.status != Status.IN_PROGRESS) {
-                        swaped.add(swap!!)
+                    if (swap?.sender == currentUser || swap?.receiver == currentUser) {
+                        if (swap?.status != Status.IN_PROGRESS) {
+                            swaped.add(swap!!)
+                        }
                     }
+
                 }
 
                 recycler_view_history.apply {

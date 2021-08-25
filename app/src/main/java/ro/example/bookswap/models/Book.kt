@@ -11,7 +11,8 @@ class Book(
     var language: String = "",
     var imageSliderUris: String = "",
     var thumbnail: String = "",
-    var owner: String = ""
+    var owner: String = "",
+    var public: Boolean = true
 ) {
 
     @Exclude
@@ -25,7 +26,8 @@ class Book(
             "language" to language,
             "imageSliderUris" to imageSliderUris,
             "thumbnail" to thumbnail,
-            "owner" to owner
+            "owner" to owner,
+            "public" to public
         )
     }
 }

@@ -7,7 +7,6 @@
     android:background="@color/black"
     tools:context=".BookVisualisationActivity">
 
-
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/layout_book_vis"
         android:layout_width="match_parent"
@@ -22,7 +21,27 @@
             android:layout_height="wrap_content"
             android:background="@color/orange"
             app:navigationIcon="@drawable/ic_left_arrow"
-            app:titleTextColor="@color/black" />
+            app:titleTextColor="@color/black" >
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switch_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:visibility="gone"
+                    android:layout_marginEnd="5dp"
+                    android:text="Public"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.appbar.MaterialToolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 

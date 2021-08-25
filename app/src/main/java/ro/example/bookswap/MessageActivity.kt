@@ -15,10 +15,8 @@ import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_message.*
 import ro.example.bookswap.adapters.MessageAdapter
-import ro.example.bookswap.models.Like
-import ro.example.bookswap.models.Match
-import ro.example.bookswap.models.Message
-import ro.example.bookswap.models.User
+import ro.example.bookswap.enums.Status
+import ro.example.bookswap.models.*
 
 class MessageActivity : AppCompatActivity() {
 
@@ -77,6 +75,15 @@ class MessageActivity : AppCompatActivity() {
                                                         Firebase.database.reference.child("likes").child(currentUser).child(elem.key!!).removeValue()
                                                     }
                                                 }
+                                        }
+
+                                        Firebase.database.reference.child("swaps").get().addOnSuccessListener { snapshotSwap ->
+                                            for (elem in snapshotSwap.children) {
+                                                val swap = elem.getValue<Swap>()
+                                                if (swap?.sender == currentUser && swap.receiver == userId || swap?.sender == userId && swap.receiver == currentUser) {
+                                                    Firebase.database.reference.child("swaps").child(swap.id).child("status").setValue(Status.DECLINED)
+                                                }
+                                            }
                                         }
 
                                         finish()

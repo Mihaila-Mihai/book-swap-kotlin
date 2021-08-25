@@ -3,12 +3,10 @@ package ro.example.bookswap.adapters
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.content.Context
-import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -19,15 +17,12 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.activity_sign_in.view.*
-import ro.example.bookswap.BookVisualisationActivity
 import ro.example.bookswap.R
 import ro.example.bookswap.enums.Status
 import ro.example.bookswap.models.Book
 import ro.example.bookswap.models.Like
 import ro.example.bookswap.models.Swap
 import ro.example.bookswap.models.User
-import javax.net.ssl.SSLEngineResult
 
 class SwapsAdapter(
     private val items: ArrayList<Swap>,
@@ -138,7 +133,7 @@ class SwapsAdapter(
                                                     for (el in res.children) {
                                                         val like: Like? = el.getValue<Like>()
                                                         Log.d("------------", "${el.key} ${like?.bookId} ${swap.senderBook} ${like?.userId} ${swap.receiver}")
-                                                        if (like!!.bookId == swap.senderBook && like.userId == swap.receiver) {
+                                                        if (like!!.bookId == swap.senderBook) {
                                                             Firebase.database.reference.child("likes").child(swap.sender).child(el.key!!).setValue(null)
                                                         }
 
@@ -148,7 +143,7 @@ class SwapsAdapter(
                                                 Firebase.database.reference.child("likes").child(swap.receiver).get().addOnSuccessListener { res ->
                                                     for (el in res.children) {
                                                         val like: Like? = el.getValue<Like>()
-                                                        if (like!!.bookId == swap.receiverBook && like.userId == swap.sender) {
+                                                        if (like!!.bookId == swap.receiverBook) {
                                                             Firebase.database.reference.child("likes").child(swap.receiver).child(el.key!!).setValue(null)
                                                         }
 

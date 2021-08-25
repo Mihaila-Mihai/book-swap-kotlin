@@ -30,7 +30,6 @@ import com.google.firebase.storage.ktx.storage
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Target
 import kotlinx.android.synthetic.main.activity_book_visualisation.*
-import kotlinx.android.synthetic.main.activity_sign_in.view.*
 import ro.example.bookswap.models.Book
 import ro.example.bookswap.models.Like
 import java.io.ByteArrayOutputStream
@@ -104,6 +103,7 @@ class BookVisualisationActivity : AppCompatActivity() {
             "true" -> {
                 like_button.visibility = View.INVISIBLE
                 add_book_button_visual.visibility = View.INVISIBLE
+                switch_button.visibility = View.VISIBLE
                 initialisePersonal(bookId!!)
             }
             "notPersonal" -> {
@@ -223,6 +223,15 @@ class BookVisualisationActivity : AppCompatActivity() {
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     book = snapshot.getValue<Book>()!!
+
+                    switch_button.isChecked = book.public
+                    Log.d("isBookPublic", book.public.toString())
+
+                    switch_button.setOnCheckedChangeListener { _, isChecked ->
+                        Log.d("isChecked", isChecked.toString())
+                        Firebase.database.reference.child("books").child(bookId).child("public").setValue(isChecked)
+                    }
+
 
                     Firebase.database.reference.child("likes").child(book.owner).get()
                         .addOnSuccessListener {

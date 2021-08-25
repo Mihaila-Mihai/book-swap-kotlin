@@ -40,6 +40,8 @@ class DiscoverFragment : Fragment() {
 
         val view = inflater.inflate(R.layout.fragment_discover, container, false)
 
+//        Firebase.auth.signOut()
+
         val books: ArrayList<Book> = ArrayList()
 
 
@@ -96,36 +98,37 @@ class DiscoverFragment : Fragment() {
                 Log.d("firebase", "Got value ${bookElement.value}")
                 val book = bookElement.getValue<Book>()
                 var isBookThere: Boolean = false
-                if (book?.owner != currentUser) {
-                    database.child("users").child(book?.owner!!).get().addOnSuccessListener { bookOwnerResult ->
-                        val bookOwner = bookOwnerResult.getValue<User>()
-                        val bookOwnerLocation: Location = Location("")
-                        bookOwnerLocation.longitude = bookOwner?.location?.longitude?.toDouble()!!
-                        bookOwnerLocation.latitude = bookOwner.location.latitude.toDouble()
-                        database.child("users").child(currentUser).get().addOnSuccessListener { currentUserResult ->
-                            val currUser = currentUserResult.getValue<User>()
-                            val currentUserLocation: Location = Location("")
-                            currentUserLocation.longitude = currUser?.location?.longitude?.toDouble()!!
-                            currentUserLocation.latitude = currUser.location.latitude.toDouble()
-                            if (currentUserLocation.distanceTo(bookOwnerLocation) < currUser.distanceToUser.toDouble()) {
-                                Log.d("Book", "BookId: ${book.id}")
+                if (book?.public == true) {
+                    if (book.owner != currentUser) {
+                        database.child("users").child(book.owner).get().addOnSuccessListener { bookOwnerResult ->
+                            val bookOwner = bookOwnerResult.getValue<User>()
+                            val bookOwnerLocation: Location = Location("")
+                            bookOwnerLocation.longitude = bookOwner?.location?.longitude?.toDouble()!!
+                            bookOwnerLocation.latitude = bookOwner.location.latitude.toDouble()
+                            database.child("users").child(currentUser).get().addOnSuccessListener { currentUserResult ->
+                                val currUser = currentUserResult.getValue<User>()
+                                val currentUserLocation: Location = Location("")
+                                currentUserLocation.longitude = currUser?.location?.longitude?.toDouble()!!
+                                currentUserLocation.latitude = currUser.location.latitude.toDouble()
+                                if (currentUserLocation.distanceTo(bookOwnerLocation) < currUser.distanceToUser.toDouble()) {
+                                    Log.d("Book", "BookId: ${book.id}")
 
-                                val result =
-                                    Firebase.database.reference.child("likes").child(book.owner).get()
-                                        .addOnSuccessListener { res ->
-                                            for (el in res.children) {
-                                                val like: Like? = el.getValue<Like>()
-                                                Log.d(
-                                                    "----------",
-                                                    "${book.id}, ${like?.bookId}, ${like?.userId}, $currentUser"
-                                                )
+                                    val result =
+                                        Firebase.database.reference.child("likes").child(book.owner).get()
+                                            .addOnSuccessListener { res ->
+                                                for (el in res.children) {
+                                                    val like: Like? = el.getValue<Like>()
+                                                    Log.d(
+                                                        "----------",
+                                                        "${book.id}, ${like?.bookId}, ${like?.userId}, $currentUser"
+                                                    )
 
-                                                if (like?.bookId == book.id) {
-                                                    if (like.userId == currentUser) {
-                                                        isBookThere = true
+                                                    if (like?.bookId == book.id) {
+                                                        if (like.userId == currentUser) {
+                                                            isBookThere = true
+                                                        }
+
                                                     }
-
-                                                }
 
 //                                    if (!(like?.bookId == book.id && like.userId == currentUser)) {
 //                                        Log.d("BookVerif", book.id)
@@ -138,43 +141,44 @@ class DiscoverFragment : Fragment() {
 //                                    }
 
 
-                                            }
+                                                }
 
-                                            if (!books.contains(book) && !isBookThere) {
-                                                books.add(book)
-                                            }
-
-                                            Log.d("Exists", res.exists().toString())
-
-                                            if (!res.exists()) {
-                                                if (!books.contains(book)) {
+                                                if (!books.contains(book) && !isBookThere) {
                                                     books.add(book)
                                                 }
+
+                                                Log.d("Exists", res.exists().toString())
+
+                                                if (!res.exists()) {
+                                                    if (!books.contains(book)) {
+                                                        books.add(book)
+                                                    }
+                                                }
+
+                                                size = books.size
+                                                Log.d("Books", books.toString())
+
+                                                manager.setStackFrom(StackFrom.None)
+                                                manager.setVisibleCount(2)
+                                                manager.setTranslationInterval(8.0F)
+                                                manager.setScaleInterval(0.95F)
+                                                manager.setSwipeThreshold(0.3F)
+                                                manager.setMaxDegree(20.0F)
+                                                manager.setDirections(Direction.HORIZONTAL)
+                                                manager.setCanScrollHorizontal(true)
+                                                manager.setSwipeableMethod(SwipeableMethod.Manual)
+                                                manager.setOverlayInterpolator(LinearInterpolator())
+
+                                                adapter = CardStackAdapter(books, view.context)
+                                                swipeView.layoutManager = manager
+                                                swipeView.adapter = adapter
+                                                swipeView.itemAnimator = DefaultItemAnimator()
                                             }
-
-                                            size = books.size
-                                            Log.d("Books", books.toString())
-
-                                            manager.setStackFrom(StackFrom.None)
-                                            manager.setVisibleCount(2)
-                                            manager.setTranslationInterval(8.0F)
-                                            manager.setScaleInterval(0.95F)
-                                            manager.setSwipeThreshold(0.3F)
-                                            manager.setMaxDegree(20.0F)
-                                            manager.setDirections(Direction.HORIZONTAL)
-                                            manager.setCanScrollHorizontal(true)
-                                            manager.setSwipeableMethod(SwipeableMethod.Manual)
-                                            manager.setOverlayInterpolator(LinearInterpolator())
-
-                                            adapter = CardStackAdapter(books, view.context)
-                                            swipeView.layoutManager = manager
-                                            swipeView.adapter = adapter
-                                            swipeView.itemAnimator = DefaultItemAnimator()
-                                        }
+                                }
                             }
                         }
-                    }
 
+                    }
                 }
             }
 

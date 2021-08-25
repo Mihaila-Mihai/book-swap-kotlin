@@ -43,7 +43,7 @@ class PersonalBooksAdapter(
         holder.authorsView.text = items[position].authors
         val imgArray: List<String> = items[position].thumbnail.split(":")
         val newImgUri = "https:" + imgArray[1]
-        Picasso.get().load(newImgUri).into(holder.thumbnailImage)
+        Picasso.get().load(newImgUri).fit().centerCrop().into(holder.thumbnailImage)
 
         holder.itemView.setOnClickListener { onItemClicked(items[position]) }
     }
