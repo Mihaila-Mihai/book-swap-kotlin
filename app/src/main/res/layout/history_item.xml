@@ -28,7 +28,7 @@
         android:layout_height="50dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        android:src="@mipmap/ic_launcher"
+        android:src="@drawable/ic_user"
         app:layout_constraintEnd_toEndOf="@id/sender_book"
         app:layout_constraintStart_toStartOf="@id/sender_book"
         app:layout_constraintTop_toBottomOf="@id/sender_book"
@@ -59,7 +59,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginTop="10dp"
-        android:src="@mipmap/ic_launcher"
+        android:src="@drawable/ic_user"
         app:layout_constraintEnd_toEndOf="@id/receiver_book"
         app:layout_constraintStart_toStartOf="@id/receiver_book"
         app:layout_constraintTop_toBottomOf="@id/receiver_book" />

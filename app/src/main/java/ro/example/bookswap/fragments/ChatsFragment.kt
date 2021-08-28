@@ -38,6 +38,7 @@ class ChatsFragment : Fragment() {
 
         reference.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                matches.clear()
                 for (el in snapshot.children) {
                     val match = el.getValue<Match>()
                     if (match?.userId1 == currentUser) {
