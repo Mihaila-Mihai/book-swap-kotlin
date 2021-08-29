@@ -1,6 +1,8 @@
 package ro.example.bookswap
 
 import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
+import android.content.Context
 import android.location.Location
 import android.os.Bundle
 import android.transition.Explode
@@ -17,12 +19,17 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.material.navigation.NavigationBarView
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
+import com.google.firebase.iid.FirebaseInstanceIdReceiver
+import com.google.firebase.iid.internal.FirebaseInstanceIdInternal
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 import ro.example.bookswap.fragments.*
 import ro.example.bookswap.models.LocationModel
 import java.util.jar.Manifest
+
+const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity(), ExitDialogFragment.NoticeDialogListener, EasyPermissions.PermissionCallbacks {
 
@@ -44,6 +51,18 @@ class MainActivity : AppCompatActivity(), ExitDialogFragment.NoticeDialogListene
                 add<DiscoverFragment>(R.id.fragment_container)
             }
         }
+        FirebaseService.sharedPref = getSharedPreferences("sharedPref", Context.MODE_PRIVATE)
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                return@addOnCompleteListener
+            }
+
+            val token = task.result
+            FirebaseService.token = token
+            Firebase.database.reference.child("users").child(currentUser!!).child("token").setValue(token)
+        }
 
         with(window) {
             val requestFeature = requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
@@ -56,7 +75,11 @@ class MainActivity : AppCompatActivity(), ExitDialogFragment.NoticeDialogListene
 //        val toast: Toast = Toast.makeText(applicationContext, "text", Toast.LENGTH_SHORT)
 
 
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        try {
+            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        } catch (e: Exception) {
+            Log.e(TAG, "${e.message}")
+        }
 
         // location permission
         if (hasLocationPermission()) {

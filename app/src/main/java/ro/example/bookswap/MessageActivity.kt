@@ -3,6 +3,7 @@ package ro.example.bookswap
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.ktx.auth
@@ -12,11 +13,20 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_message.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ro.example.bookswap.adapters.MessageAdapter
 import ro.example.bookswap.enums.Status
 import ro.example.bookswap.models.*
+import java.lang.Exception
+
+const val TOPIC = "/topics/myTopic"
 
 class MessageActivity : AppCompatActivity() {
 
@@ -24,10 +34,14 @@ class MessageActivity : AppCompatActivity() {
     private val currentUser = Firebase.auth.currentUser?.uid
     private lateinit var userId: String
 
+    val TAG = "MessageActivity"
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_message)
+
+        FirebaseMessaging.getInstance().subscribeToTopic(TOPIC)
 
         userId = intent.getStringExtra("user")!!
 
@@ -159,12 +173,39 @@ class MessageActivity : AppCompatActivity() {
             val messageRef = reference.child("chats").child(id)
             val message = Message(currentUser!!, userId, id, text_send.text.toString())
             messageRef.setValue(message).addOnSuccessListener {
+                val title = "New message"
+                val text = text_send.text.toString()
+                Firebase.database.reference.child("users").child(userId).child("token").get().addOnSuccessListener {
+                    if (title.isNotEmpty() && text.isNotEmpty()) {
+                        PushNotification(
+                            NotificationData("${currentUser}+${title}", text),
+                            it.value.toString()
+                        ).also { value ->
+                            sendNotification(value)
+                        }
+                    }
+                }
+
+
                 text_send.setText("")
             }.addOnFailureListener {
                 Toast.makeText(this, "There was a problem", Toast.LENGTH_SHORT).show()
             }
         } else {
-            Toast.makeText(this, "merge", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Text can't be empty", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun sendNotification(notification: PushNotification) = CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val response = RetrofitInstance.api.postNotification(notification)
+            if (response.isSuccessful) {
+                Log.d(TAG, "Response:")
+            } else {
+                Log.e(TAG + "eee", response.errorBody().toString())
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, e.toString(), e.cause)
         }
     }
 }

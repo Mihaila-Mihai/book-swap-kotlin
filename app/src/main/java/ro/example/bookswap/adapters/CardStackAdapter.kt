@@ -16,8 +16,10 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
-import ro.example.bookswap.BookVisualisationActivity
-import ro.example.bookswap.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import ro.example.bookswap.*
 import ro.example.bookswap.models.Book
 import ro.example.bookswap.models.Like
 import ro.example.bookswap.models.Match
@@ -147,6 +149,19 @@ class CardStackAdapter(
                             matchRef.push().setValue(
                                 Match(currentUser, owner)
                             )
+                            Firebase.database.reference.child("users").child(owner).get().addOnSuccessListener {
+                                val ownerObj = it.getValue<User>()!!
+                                Firebase.database.reference.child("users").child(currentUser).get().addOnCompleteListener { res ->
+                                    val currentUserObj = res.result.getValue<User>()
+                                    PushNotification(
+                                        NotificationData("New match", currentUserObj?.username!!),
+                                        ownerObj.token
+                                    ).also { value ->
+                                        sendNotification(value)
+                                    }
+                                }
+
+                            }
                         }
                     }
                 }
@@ -180,5 +195,18 @@ class CardStackAdapter(
 
     override fun getItemCount(): Int {
         return items.size
+    }
+
+    private fun sendNotification(notification: PushNotification) = CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val response = RetrofitInstance.api.postNotification(notification)
+            if (response.isSuccessful) {
+                Log.d(TAG, "Response:")
+            } else {
+                Log.e(TAG + "eee", response.errorBody().toString())
+            }
+        } catch (e: java.lang.Exception) {
+            Log.e(TAG, e.toString(), e.cause)
+        }
     }
 }
