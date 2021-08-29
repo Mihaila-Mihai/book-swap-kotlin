@@ -1,6 +1,5 @@
 package ro.example.bookswap
 
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.NotificationManager.IMPORTANCE_HIGH
@@ -14,7 +13,6 @@ import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.Log
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.google.firebase.database.ktx.database
@@ -25,7 +23,6 @@ import com.google.firebase.messaging.RemoteMessage
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Target
 import ro.example.bookswap.models.User
-import java.lang.Exception
 import kotlin.random.Random
 
 private const val CHANNEL_ID = "my_channel"
