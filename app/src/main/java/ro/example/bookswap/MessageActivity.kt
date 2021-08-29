@@ -33,6 +33,7 @@ class MessageActivity : AppCompatActivity() {
     private val reference = Firebase.database.reference
     private val currentUser = Firebase.auth.currentUser?.uid
     private lateinit var userId: String
+    private lateinit var user: User
 
     val TAG = "MessageActivity"
 
@@ -123,10 +124,10 @@ class MessageActivity : AppCompatActivity() {
         val userRef = reference.child("users").child(userId)
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val user = snapshot.getValue<User>()
-                    username.text = user?.username
-                    Picasso.get().load(user?.imageUrl).into(profile_image_message)
-                    readMessages(user?.imageUrl!!)
+                    user = snapshot.getValue<User>()!!
+                    username.text = user.username
+                    Picasso.get().load(user.imageUrl).into(profile_image_message)
+                    readMessages(user.imageUrl)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -173,21 +174,25 @@ class MessageActivity : AppCompatActivity() {
             val messageRef = reference.child("chats").child(id)
             val message = Message(currentUser!!, userId, id, text_send.text.toString())
             messageRef.setValue(message).addOnSuccessListener {
-                val title = "New message"
-                val text = text_send.text.toString()
-                Firebase.database.reference.child("users").child(userId).child("token").get().addOnSuccessListener {
-                    if (title.isNotEmpty() && text.isNotEmpty()) {
-                        PushNotification(
-                            NotificationData("${currentUser}+${title}", text),
-                            it.value.toString()
-                        ).also { value ->
-                            sendNotification(value)
+                Firebase.database.reference.child("users").child(currentUser).child("username").get().addOnSuccessListener { result ->
+                    val title = result.value.toString()
+                    val text = text_send.text.toString()
+                    Firebase.database.reference.child("users").child(userId).child("token").get().addOnSuccessListener {
+                        if (title.isNotEmpty() && text.isNotEmpty()) {
+                            PushNotification(
+                                NotificationData("${currentUser}+${title}", text),
+                                it.value.toString()
+                            ).also { value ->
+                                sendNotification(value)
+                            }
                         }
                     }
+                    text_send.setText("")
                 }
 
 
-                text_send.setText("")
+
+
             }.addOnFailureListener {
                 Toast.makeText(this, "There was a problem", Toast.LENGTH_SHORT).show()
             }
