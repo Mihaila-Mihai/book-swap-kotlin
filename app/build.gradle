@@ -19,10 +19,16 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    buildFeatures {
+        viewBinding true
+    }
+
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "apiKey", "\"https://app.sandbox.midtrans.com/snap/v1\""
         }
     }
     compileOptions {
@@ -32,6 +38,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    namespace 'ro.example.bookswap'
 }
 
 dependencies {
