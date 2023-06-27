@@ -20,6 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/orange"
+            app:menu="@menu/share"
             app:navigationIcon="@drawable/ic_left_arrow"
             app:titleTextColor="@color/black" >
 
@@ -59,13 +60,14 @@
             android:layout_height="wrap_content">
 
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <androidx.constraintlayout.motion.widget.MotionLayout
                 android:id="@+id/alt_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                app:layoutDescription="@xml/activity_book_visualisation_scene">
 
                 <ImageView
                     android:id="@+id/background"
@@ -296,7 +298,7 @@
                 <!--                app:layout_constraintStart_toStartOf="@id/container"-->
                 <!--                app:layout_constraintEnd_toEndOf="@id/container"/>-->
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.motion.widget.MotionLayout>
 
 
             <androidx.constraintlayout.widget.ConstraintLayout

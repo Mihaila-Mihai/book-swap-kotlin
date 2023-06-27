@@ -41,4 +41,7 @@
     <string name="swap">swap</string>
     <string name="button_to_swap_books">Button to swap books</string>
     <string name="swap_user_text">Choose one of %s\'s books</string>
+    <string name="search">Search</string>
+    <string name="search_hint">Hint</string>
+    <string name="share">Share</string>
 </resources>

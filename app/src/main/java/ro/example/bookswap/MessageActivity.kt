@@ -1,10 +1,15 @@
 package ro.example.bookswap
 
+import android.app.SearchManager
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -34,6 +39,7 @@ class MessageActivity : AppCompatActivity() {
     private val currentUser = Firebase.auth.currentUser?.uid
     private lateinit var userId: String
     private lateinit var user: User
+    var messages: ArrayList<Message> = ArrayList()
 
     val TAG = "MessageActivity"
 
@@ -62,6 +68,9 @@ class MessageActivity : AppCompatActivity() {
             intent.putExtra("userId", userId)
             startActivity(intent)
         }
+
+        setSupportActionBar(toolbar);
+        supportActionBar?.setDisplayShowTitleEnabled(false);
 
         toolbar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
@@ -127,7 +136,7 @@ class MessageActivity : AppCompatActivity() {
                     user = snapshot.getValue<User>()!!
                     username.text = user.username
                     Picasso.get().load(user.imageUrl).into(profile_image_message)
-                    readMessages(user.imageUrl)
+                    readMessages(user.imageUrl, null)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -138,8 +147,43 @@ class MessageActivity : AppCompatActivity() {
 
     }
 
-    private fun readMessages(imageUrl: String) {
-        val messages: ArrayList<Message> = ArrayList()
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+
+        // inside inflater we are inflating our menu file.
+        inflater.inflate(R.menu.top_app_bar, menu)
+
+        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        (menu.findItem(R.id.actionSearch).actionView as SearchView).apply {
+            setSearchableInfo(searchManager.getSearchableInfo(componentName))
+        }
+
+
+        // below line is to get our menu item.
+        val searchItem: MenuItem = menu.findItem(R.id.actionSearch)
+
+        // getting search view of our item.
+        val searchView: SearchView = searchItem.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener,
+            android.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(p0: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(msg: String): Boolean {
+                // inside on query text change method we are
+                // calling a method to filter our recycler view.
+                Log.d(TAG, "Message: $msg")
+                readMessages(user.imageUrl, msg)
+                return false
+            }
+        })
+        return true
+    }
+
+    private fun readMessages(imageUrl: String, msg: String?) {
+        messages = ArrayList()
 
         val messageRef =
             reference.child("chats").addValueEventListener(object : ValueEventListener {
@@ -148,7 +192,13 @@ class MessageActivity : AppCompatActivity() {
                     for (message in snapshot.children) {
                         val mess = message.getValue<Message>()
                         if ((mess?.sender == currentUser && mess?.receiver == userId) || (mess?.sender == userId && mess.receiver == currentUser)) {
-                            messages.add(mess)
+                            if (msg != null) {
+                                if (mess.message.contains(msg)) {
+                                    messages.add(mess)
+                                }
+                            } else {
+                                messages.add(mess)
+                            }
                         }
                         msg_recycler_view.apply {
                             val manager = LinearLayoutManager(this@MessageActivity)

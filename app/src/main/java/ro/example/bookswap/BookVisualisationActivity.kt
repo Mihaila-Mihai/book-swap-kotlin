@@ -1,5 +1,7 @@
 package ro.example.bookswap
 
+import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Intent
 import android.graphics.Bitmap
@@ -9,6 +11,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageButton
@@ -30,6 +33,7 @@ import com.google.firebase.storage.ktx.storage
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Target
 import kotlinx.android.synthetic.main.activity_book_visualisation.*
+import kotlinx.android.synthetic.main.activity_message.toolbar
 import ro.example.bookswap.models.Book
 import ro.example.bookswap.models.Like
 import java.io.ByteArrayOutputStream
@@ -70,9 +74,13 @@ class BookVisualisationActivity : AppCompatActivity() {
     private lateinit var book: Book
     private var images: MutableList<String> = ArrayList()
 
+    @SuppressLint("Recycle")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_book_visualisation)
+
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
 
         toolbar_book_vis.setNavigationOnClickListener { finish() }
         toolbar_book_vis.title = "Book"
@@ -155,7 +163,36 @@ class BookVisualisationActivity : AppCompatActivity() {
             editClicked++
         }
 
+        toolbar_book_vis.setOnMenuItemClickListener { menuItem ->
+            when(menuItem.itemId) {
+                R.id.share -> {
+                    val sendIntent: Intent = Intent().apply {
+                        action = Intent.ACTION_SEND
+                        putExtra(Intent.EXTRA_TEXT, title.toString())
+                        type = "text/plain"
+                    }
+                    startActivity(sendIntent)
 
+                    true
+                }
+                else -> false
+            }
+        }
+
+        val thumbnail = findViewById<View>(R.id.thumbnail)
+
+        val animateGlass1 = ObjectAnimator.ofFloat(thumbnail, "rotation", 360f)
+        animateGlass1.duration = 1000
+        animateGlass1.start()
+
+
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        Toast.makeText(this, "menu", Toast.LENGTH_SHORT).show()
+        val inflater = menuInflater
+        inflater.inflate(R.menu.share, menu)
+        return super.onCreateOptionsMenu(menu)
     }
 
     private fun likeBook() {
@@ -272,6 +309,7 @@ class BookVisualisationActivity : AppCompatActivity() {
                         thumbnail.setImageResource(R.mipmap.ic_launcher)
                     }
 //                    Toast.makeText(this@BookVisualisationActivity, book.title, Toast.LENGTH_SHORT).show()
+                    title = book.title
                     titleView.setText(book.title)
                     authorsView.setText(book.authors)
                     pageCountView.setText(book.pageCount)

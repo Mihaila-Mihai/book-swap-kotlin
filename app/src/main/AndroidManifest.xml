@@ -37,8 +37,13 @@
         <activity android:name=".HistoryActivity"></activity>
         <activity android:name=".SwapActivity" />
         <activity android:name=".ProfileVisualisationActivity" />
-        <activity android:name=".MessageActivity" />
+        <activity android:name=".MessageActivity">
+            <meta-data android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+
+        </activity>
         <activity android:name=".BookVisualisationActivity" />
+        <activity android:name=".FilterMessagesActivity"/>
 
         <meta-data
             android:name="com.google.mlkit.vision.DEPENDENCIES"
