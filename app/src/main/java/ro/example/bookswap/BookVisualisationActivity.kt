@@ -61,7 +61,7 @@ class BookVisualisationActivity : AppCompatActivity() {
 
     private var personal: String? = null
 
-    private var uriArrayList: java.util.ArrayList<String>? = null
+    private var uriArrayList: java.util.ArrayList<String>? = ArrayList()
 
     private var editClicked: Int = 0
 

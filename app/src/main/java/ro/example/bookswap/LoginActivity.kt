@@ -176,7 +176,7 @@ class LoginActivity : AppCompatActivity() {
         val intent = when (activity) {
             Activities.MAIN -> Intent(this, MainActivity::class.java)
             Activities.REGISTER -> Intent(this, RegisterActivity::class.java)
-            Activities.TUTORIAL -> Intent(this, TutorialActivity::class.java)
+            Activities.TUTORIAL -> Intent(this, TutorialYtVideoActivity::class.java)
         }
         startActivity(intent)
         if (activity == Activities.MAIN) {

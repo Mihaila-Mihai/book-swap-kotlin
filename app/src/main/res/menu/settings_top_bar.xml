@@ -6,4 +6,14 @@
         android:icon="@drawable/ic_down_arrow"
         android:title="Sign Out"
         app:showAsAction="withText"/>
+    <item
+        android:id="@+id/tutorial"
+        android:icon="@drawable/ic_down_arrow"
+        android:title="Tutorial"
+        app:showAsAction="withText"/>
+    <item
+        android:id="@+id/tutorialYt"
+        android:icon="@drawable/ic_down_arrow"
+        android:title="Tutorial (YouTube)"
+        app:showAsAction="withText"/>
 </menu>

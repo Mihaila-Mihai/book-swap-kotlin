@@ -72,6 +72,14 @@ class ProfileActivity : AppCompatActivity(), ChangePasswordDialogFragment.Notice
                     signOut()
                     true
                 }
+                R.id.tutorial -> {
+                    startTutorialVideo()
+                    true
+                }
+                R.id.tutorialYt -> {
+                    startTutorialVideoYt()
+                    true
+                }
                 else -> false
             }
         }
@@ -437,6 +445,17 @@ class ProfileActivity : AppCompatActivity(), ChangePasswordDialogFragment.Notice
             Toast.makeText(this, "Image changed", Toast.LENGTH_SHORT).show()
         }
     }
+
+    private fun startTutorialVideo() {
+        val intent = Intent(this, TutorialVideoActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun startTutorialVideoYt() {
+        val intent = Intent(this, TutorialYtVideoActivity::class.java)
+        startActivity(intent)
+    }
+
 
 
 }

@@ -49,15 +49,22 @@
             android:name="com.google.mlkit.vision.DEPENDENCIES"
             android:value="ocr" />
 
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${MAPS_API_KEY}" />
+
+
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="fullSensor"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity android:name=".AddBookActivity" />
+        <activity android:name=".TutorialVideoActivity" />
+        <activity android:name=".MapsActivity" />
         <activity android:name=".ImageViewActivity" />
         <activity android:name=".CameraActivity" />
         <activity android:name=".ProfileActivity" />
-        <activity android:name=".TutorialActivity" />
+        <activity android:name=".TutorialYtVideoActivity" android:screenOrientation="landscape" android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"/>
         <activity android:name=".RegisterActivity" />
         <activity android:name=".LoginActivity">
             <intent-filter>

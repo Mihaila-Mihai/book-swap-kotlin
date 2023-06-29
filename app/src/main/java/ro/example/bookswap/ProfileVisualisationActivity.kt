@@ -1,5 +1,6 @@
 package ro.example.bookswap
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,6 +33,22 @@ class ProfileVisualisationActivity : AppCompatActivity() {
         val userId = intent.getStringExtra("userId")
 
         fillUserUI(userId)
+
+        toolbar_like.setOnMenuItemClickListener { menuItem ->
+            when(menuItem.itemId) {
+                R.id.maps -> {
+                    val sendIntent: Intent = Intent(this, MapsActivity::class.java).apply {
+                        putExtra("LONGITUDE", user.location.longitude)
+                        putExtra("LATITUDE", user.location.latitude)
+                        type = "text/plain"
+                    }
+                    startActivity(sendIntent)
+
+                    true
+                }
+                else -> false
+            }
+        }
 
     }
 

@@ -44,4 +44,5 @@
     <string name="search">Search</string>
     <string name="search_hint">Hint</string>
     <string name="share">Share</string>
+    <string name="showOnMap">Show on map</string>
 </resources>

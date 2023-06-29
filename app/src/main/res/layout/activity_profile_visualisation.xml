@@ -19,6 +19,7 @@
             android:layout_height="wrap_content"
             app:titleTextColor="@color/black"
             android:background="@color/orange"
+            app:menu="@menu/maps"
             style="@style/Widget.MaterialComponents.Toolbar.Primary"
             app:navigationIcon="@drawable/ic_left_arrow"/>
 
